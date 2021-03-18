@@ -1,5 +1,5 @@
 format:
-	gofmt -s -w .
+	bin/format.sh
 
 lint:
 	golangci-lint run ./...
