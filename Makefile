@@ -8,7 +8,10 @@ lint:
 	buf lint
 	golangci-lint run ./...
 	
-beauty: format lint
+pretty: tidy format lint
+
+mockgen:
+	bin/generate-mock.sh
 
 test:
 	go test -v -race ./...

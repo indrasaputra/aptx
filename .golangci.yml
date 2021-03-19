@@ -1,3 +1,7 @@
+run:
+  skip-dirs:
+    - test/mock
+
 linters:
   enable:
     - bodyclose
