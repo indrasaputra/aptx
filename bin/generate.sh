@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-IMAGE_DIR=image
+IMAGE_DIR=bin
 
 buf lint
 buf breaking --against '.git#branch=main'
