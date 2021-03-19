@@ -1,10 +1,10 @@
-# Shortener
+# URL Shortener
 
-[![Go Report Card](https://goreportcard.com/badge/github.com/indrasaputra/shortener)](https://goreportcard.com/report/github.com/indrasaputra/shortener)
-[![Workflow](https://github.com/indrasaputra/shortener/workflows/Test/badge.svg)](https://github.com/indrasaputra/shortener/actions)
-[![codecov](https://codecov.io/gh/indrasaputra/shortener/branch/main/graph/badge.svg?token=VI4V05KUEO)](https://codecov.io/gh/indrasaputra/shortener)
-[![Maintainability](https://api.codeclimate.com/v1/badges/70dc0170e2546648450f/maintainability)](https://codeclimate.com/github/indrasaputra/shortener/maintainability)
-[![Go Reference](https://pkg.go.dev/badge/github.com/indrasaputra/shortener.svg)](https://pkg.go.dev/github.com/indrasaputra/shortener)
+[![Go Report Card](https://goreportcard.com/badge/github.com/indrasaputra/url-shortener)](https://goreportcard.com/report/github.com/indrasaputra/url-shortener)
+[![Workflow](https://github.com/indrasaputra/url-shortener/workflows/Test/badge.svg)](https://github.com/indrasaputra/url-shortener/actions)
+[![codecov](https://codecov.io/gh/indrasaputra/url-shortener/branch/main/graph/badge.svg?token=VI4V05KUEO)](https://codecov.io/gh/indrasaputra/url-shortener)
+[![Maintainability](https://api.codeclimate.com/v1/badges/e28a29089f4c66303cb0/maintainability)](https://codeclimate.com/github/indrasaputra/url-shortener/maintainability)
+[![Go Reference](https://pkg.go.dev/badge/github.com/indrasaputra/url-shortener.svg)](https://pkg.go.dev/github.com/indrasaputra/url-shortener)
 
 ## Onboarding and Development Guide
 
