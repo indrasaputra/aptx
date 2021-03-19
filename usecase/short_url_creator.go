@@ -57,7 +57,7 @@ func (sc *ShortURLCreator) Create(ctx context.Context, url string) (*entity.URL,
 		return nil, entity.ErrEmptyURL
 	}
 
-	data := &entity.URL{}
+	var data *entity.URL
 	var err *entity.Error
 	for i := 0; i < maxRetry; i++ {
 		data = sc.generateURL(url)

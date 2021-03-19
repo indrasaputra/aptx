@@ -3,6 +3,7 @@ module github.com/indrasaputra/shortener
 go 1.16
 
 require (
+	github.com/golang/mock v1.5.0
 	github.com/golang/protobuf v1.5.1
 	github.com/stretchr/testify v1.5.1
 	google.golang.org/genproto v0.0.0-20210318145829-90b20ab00860

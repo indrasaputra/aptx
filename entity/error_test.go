@@ -4,8 +4,9 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/indrasaputra/shortener/entity"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/indrasaputra/shortener/entity"
 )
 
 func TestNewError(t *testing.T) {
