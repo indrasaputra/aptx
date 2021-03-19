@@ -3,7 +3,7 @@ name: Test
 on: [push, pull_request]
   
 jobs:
-  code-lint:
+  go-code-lint:
     name: lint using golangci
     if: github.event_name == 'push'
     runs-on: ubuntu-latest
@@ -13,6 +13,17 @@ jobs:
         uses: golangci/golangci-lint-action@v2
         with:
           version: v1.38.0
+  
+  proto-code-format:
+    name: format proto using clang-format
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: DoozyX/clang-format-lint-action@v0.11
+      with:
+        source: '.'
+        extensions: 'proto'
+        clangFormatVersion: 11
 
   unit-test:
     name: unit test and coverage
