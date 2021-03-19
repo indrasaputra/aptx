@@ -8,6 +8,8 @@ lint:
 	buf lint
 	golangci-lint run ./...
 	
+beauty: format lint
+
 test:
 	go test -v -race ./...
 
