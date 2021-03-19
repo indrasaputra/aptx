@@ -1,7 +1,11 @@
 format:
 	bin/format.sh
 
+generate:
+	bin/generate.sh
+
 lint:
+	buf lint
 	golangci-lint run ./...
 	
 test:
