@@ -6,6 +6,9 @@ var (
 	// ErrInternalServer indicates there is unexpected problem occurs in the system itself.
 	// The detail of the error/problem should be known in internal message.
 	ErrInternalServer = NewError("01-001", "Internal server error")
+
+	// ErrEmptyURL is returned when the original URL is empty.
+	ErrEmptyURL = NewError("02-001", "URL is empty")
 )
 
 // Error represents a data structure for error.
