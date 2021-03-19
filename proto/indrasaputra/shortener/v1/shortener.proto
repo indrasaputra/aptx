@@ -10,7 +10,8 @@ import "google/protobuf/timestamp.proto";
 service URLShortenerService {
   rpc CreateShortURL(CreateShortURLRequest) returns (CreateShortURLResponse) {
     option (google.api.http) = {
-      post : "/v1/urls"
+      post : "/v1/urls",
+      body : "*"
     };
   }
 }
