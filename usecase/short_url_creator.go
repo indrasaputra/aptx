@@ -28,8 +28,6 @@ type URLGenerator interface {
 // URLRepository defines the repository for URL.
 type URLRepository interface {
 	// Save saves the URL in the repository.
-	// It ensures that the new short URL is unique.
-	// Otherwise, it will return ErrURLAlreadyExist.
 	Save(ctx context.Context, url *entity.URL) *entity.Error
 }
 
@@ -48,8 +46,8 @@ func NewShortURLCreator(generator URLGenerator, repo URLRepository) *ShortURLCre
 }
 
 // Create creates a short URL for the given URL.
-// It ensures that the short URL is unique from the rest.
-// If it is unsuccessful in creating a unique short URL, it will return the ErrURLAlreadyExist.
+// It tries to ensure that the short URL is unique from the rest.
+// If it is unsuccessful in creating a unique short URL, it will return error.
 //
 // Currently, it does not check if the URL is valid. It only checks whether the URL is empty.
 func (sc *ShortURLCreator) Create(ctx context.Context, url string) (*entity.URL, *entity.Error) {
@@ -65,7 +63,7 @@ func (sc *ShortURLCreator) Create(ctx context.Context, url string) (*entity.URL,
 			return data, nil
 		}
 	}
-	return data, err
+	return nil, err
 }
 
 func (sc *ShortURLCreator) generateURL(url string) *entity.URL {

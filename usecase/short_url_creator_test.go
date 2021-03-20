@@ -3,6 +3,7 @@ package usecase_test
 import (
 	"context"
 	"testing"
+	"time"
 
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
@@ -12,10 +13,14 @@ import (
 	"github.com/indrasaputra/shortener/usecase"
 )
 
+const (
+	defaultExpiryTime = 7 * 24 * time.Hour
+)
+
 type ShortURLCreatorExecutor struct {
 	usecase   *usecase.ShortURLCreator
-	generator *mock_usecase.MockURLGenerator
-	repo      *mock_usecase.MockURLRepository
+	generator *mock_usecase.MockURLGeneratorV2
+	repo      *mock_usecase.MockURLRepositoryV2
 }
 
 func TestNewShortURLCreator(t *testing.T) {
@@ -32,7 +37,7 @@ func TestShortURLCreator_Create(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	t.Run("empty url can't be processedd", func(t *testing.T) {
+	t.Run("empty url can't be processed", func(t *testing.T) {
 		exec := createShortURLCreatorExecutor(ctrl)
 		urls := []string{"", "   ", "        ", "     "}
 
@@ -44,11 +49,33 @@ func TestShortURLCreator_Create(t *testing.T) {
 			assert.Nil(t, res)
 		}
 	})
+
+	t.Run("short url is not unique", func(t *testing.T) {
+		exec := createShortURLCreatorExecutor(ctrl)
+		original := "http://orignal-url-1.url"
+		short := "http://short.url"
+
+		exec.generator.SetReturnValues(short)
+		exec.repo.SetReturnValues(entity.ErrInternalServer)
+
+		res, err := exec.usecase.Create(context.Background(), original)
+
+		assert.NotNil(t, err)
+		assert.Nil(t, res)
+	})
+}
+
+func createURLEntity(original, short string) *entity.URL {
+	return &entity.URL{
+		ShortURL:    short,
+		OriginalURL: original,
+		ExpiredAt:   time.Now().Add(defaultExpiryTime),
+	}
 }
 
 func createShortURLCreatorExecutor(ctrl *gomock.Controller) *ShortURLCreatorExecutor {
-	g := mock_usecase.NewMockURLGenerator(ctrl)
-	r := mock_usecase.NewMockURLRepository(ctrl)
+	g := mock_usecase.NewMockURLGeneratorV2()
+	r := mock_usecase.NewMockURLRepositoryV2()
 	u := usecase.NewShortURLCreator(g, r)
 
 	return &ShortURLCreatorExecutor{
