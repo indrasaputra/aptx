@@ -63,6 +63,20 @@ func TestShortURLCreator_Create(t *testing.T) {
 		assert.NotNil(t, err)
 		assert.Nil(t, res)
 	})
+
+	t.Run("successfully create a short url", func(t *testing.T) {
+		exec := createShortURLCreatorExecutor(ctrl)
+		original := "http://orignal-url-1.url"
+		short := "http://short.url"
+
+		exec.generator.SetReturnValues(short)
+		exec.repo.SetReturnValues(nil)
+
+		res, err := exec.usecase.Create(context.Background(), original)
+
+		assert.Nil(t, err)
+		assert.NotNil(t, res)
+	})
 }
 
 func createURLEntity(original, short string) *entity.URL {
