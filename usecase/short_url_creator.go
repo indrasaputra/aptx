@@ -11,6 +11,7 @@ import (
 const (
 	maxRetry          = 3
 	defaultExpiryTime = 7 * 24 * time.Hour
+	shortURLLength    = 7
 )
 
 // CreateShortURL is the interface that defines the short url creation.
@@ -21,8 +22,8 @@ type CreateShortURL interface {
 
 // URLGenerator defines the short url generator.
 type URLGenerator interface {
-	// Generate generates a short URL from the given URL.
-	Generate(url string) string
+	// Generate generates a short URL with defined length.
+	Generate(length uint) string
 }
 
 // URLRepository defines the repository for URL.
@@ -67,7 +68,7 @@ func (sc *ShortURLCreator) Create(ctx context.Context, url string) (*entity.URL,
 }
 
 func (sc *ShortURLCreator) generateURL(url string) *entity.URL {
-	shortURL := sc.generator.Generate(url)
+	shortURL := sc.generator.Generate(shortURLLength)
 	return &entity.URL{
 		ShortURL:    shortURL,
 		OriginalURL: url,
