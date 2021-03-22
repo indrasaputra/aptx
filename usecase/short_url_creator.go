@@ -23,7 +23,7 @@ type CreateShortURL interface {
 // URLGenerator defines the short url generator.
 type URLGenerator interface {
 	// Generate generates a short URL with defined length.
-	Generate(length uint) string
+	Generate(length uint) (string, *entity.Error)
 }
 
 // URLRepository defines the repository for URL.
@@ -59,7 +59,10 @@ func (sc *ShortURLCreator) Create(ctx context.Context, url string) (*entity.URL,
 	var data *entity.URL
 	var err *entity.Error
 	for i := 0; i < maxRetry; i++ {
-		data = sc.generateURL(url)
+		data, err = sc.generateURL(url)
+		if err != nil {
+			continue
+		}
 		if err = sc.repo.Save(ctx, data); err == nil {
 			return data, nil
 		}
@@ -67,11 +70,14 @@ func (sc *ShortURLCreator) Create(ctx context.Context, url string) (*entity.URL,
 	return nil, err
 }
 
-func (sc *ShortURLCreator) generateURL(url string) *entity.URL {
-	shortURL := sc.generator.Generate(shortURLLength)
+func (sc *ShortURLCreator) generateURL(url string) (*entity.URL, *entity.Error) {
+	shortURL, err := sc.generator.Generate(shortURLLength)
+	if err != nil {
+		return nil, err
+	}
 	return &entity.URL{
 		ShortURL:    shortURL,
 		OriginalURL: url,
 		ExpiredAt:   time.Now().Add(defaultExpiryTime),
-	}
+	}, nil
 }

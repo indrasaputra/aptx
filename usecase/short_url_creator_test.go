@@ -38,12 +38,26 @@ func TestShortURLCreator_Create(t *testing.T) {
 		}
 	})
 
+	t.Run("generator always returns error", func(t *testing.T) {
+		exec := createShortURLCreatorExecutor()
+		original := "http://orignal-1.url"
+		short := "http://short-1.url"
+
+		exec.generator.SetReturnValues(short, entity.ErrInternalServer)
+
+		res, err := exec.usecase.Create(context.Background(), original)
+
+		assert.NotNil(t, err)
+		assert.Equal(t, entity.ErrInternalServer, err)
+		assert.Nil(t, res)
+	})
+
 	t.Run("short url is not unique", func(t *testing.T) {
 		exec := createShortURLCreatorExecutor()
-		original := "http://orignal-url-1.url"
-		short := "http://short.url"
+		original := "http://orignal-2.url"
+		short := "http://short-2.url"
 
-		exec.generator.SetReturnValues(short)
+		exec.generator.SetReturnValues(short, nil)
 		exec.repo.SetReturnValues(entity.ErrInternalServer)
 
 		res, err := exec.usecase.Create(context.Background(), original)
@@ -54,10 +68,10 @@ func TestShortURLCreator_Create(t *testing.T) {
 
 	t.Run("successfully create a short url", func(t *testing.T) {
 		exec := createShortURLCreatorExecutor()
-		original := "http://orignal-url-1.url"
-		short := "http://short.url"
+		original := "http://orignal-3.url"
+		short := "http://short-3.url"
 
-		exec.generator.SetReturnValues(short)
+		exec.generator.SetReturnValues(short, nil)
 		exec.repo.SetReturnValues(nil)
 
 		res, err := exec.usecase.Create(context.Background(), original)
