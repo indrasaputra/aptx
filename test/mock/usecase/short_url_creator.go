@@ -75,17 +75,17 @@ func (m *MockURLGenerator) EXPECT() *MockURLGeneratorMockRecorder {
 }
 
 // Generate mocks base method
-func (m *MockURLGenerator) Generate(url string) string {
+func (m *MockURLGenerator) Generate(length uint) string {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Generate", url)
+	ret := m.ctrl.Call(m, "Generate", length)
 	ret0, _ := ret[0].(string)
 	return ret0
 }
 
 // Generate indicates an expected call of Generate
-func (mr *MockURLGeneratorMockRecorder) Generate(url interface{}) *gomock.Call {
+func (mr *MockURLGeneratorMockRecorder) Generate(length interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Generate", reflect.TypeOf((*MockURLGenerator)(nil).Generate), url)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Generate", reflect.TypeOf((*MockURLGenerator)(nil).Generate), length)
 }
 
 // MockURLRepository is a mock of URLRepository interface

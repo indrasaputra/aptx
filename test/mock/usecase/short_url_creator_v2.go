@@ -21,7 +21,7 @@ func (m *MockURLGeneratorV2) SetReturnValues(value string) {
 }
 
 // Generate mocks base method
-func (m *MockURLGeneratorV2) Generate(_ string) string {
+func (m *MockURLGeneratorV2) Generate(_ uint) string {
 	return m.value
 }
 
