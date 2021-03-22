@@ -13,8 +13,10 @@ import (
 )
 
 func TestNewInMemoryURLRepository(t *testing.T) {
-	repo := repository.NewInMemoryURLRepository()
-	assert.NotNil(t, repo)
+	t.Run("successfully create an instance of InMemoryURLRepository", func(t *testing.T) {
+		repo := repository.NewInMemoryURLRepository()
+		assert.NotNil(t, repo)
+	})
 }
 
 func TestInMemoryURLRepository_Save(t *testing.T) {
