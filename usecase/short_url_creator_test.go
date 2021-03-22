@@ -3,18 +3,12 @@ package usecase_test
 import (
 	"context"
 	"testing"
-	"time"
 
-	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 
 	"github.com/indrasaputra/shortener/entity"
 	mock_usecase "github.com/indrasaputra/shortener/test/mock/usecase"
 	"github.com/indrasaputra/shortener/usecase"
-)
-
-const (
-	defaultExpiryTime = 7 * 24 * time.Hour
 )
 
 type ShortURLCreatorExecutor struct {
@@ -24,21 +18,15 @@ type ShortURLCreatorExecutor struct {
 }
 
 func TestNewShortURLCreator(t *testing.T) {
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
-
 	t.Run("successfully create an instance of ShortURLCreator", func(t *testing.T) {
-		exec := createShortURLCreatorExecutor(ctrl)
+		exec := createShortURLCreatorExecutor()
 		assert.NotNil(t, exec.usecase)
 	})
 }
 
 func TestShortURLCreator_Create(t *testing.T) {
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
-
 	t.Run("empty url can't be processed", func(t *testing.T) {
-		exec := createShortURLCreatorExecutor(ctrl)
+		exec := createShortURLCreatorExecutor()
 		urls := []string{"", "   ", "        ", "     "}
 
 		for _, url := range urls {
@@ -51,7 +39,7 @@ func TestShortURLCreator_Create(t *testing.T) {
 	})
 
 	t.Run("short url is not unique", func(t *testing.T) {
-		exec := createShortURLCreatorExecutor(ctrl)
+		exec := createShortURLCreatorExecutor()
 		original := "http://orignal-url-1.url"
 		short := "http://short.url"
 
@@ -65,7 +53,7 @@ func TestShortURLCreator_Create(t *testing.T) {
 	})
 
 	t.Run("successfully create a short url", func(t *testing.T) {
-		exec := createShortURLCreatorExecutor(ctrl)
+		exec := createShortURLCreatorExecutor()
 		original := "http://orignal-url-1.url"
 		short := "http://short.url"
 
@@ -79,15 +67,7 @@ func TestShortURLCreator_Create(t *testing.T) {
 	})
 }
 
-func createURLEntity(original, short string) *entity.URL {
-	return &entity.URL{
-		ShortURL:    short,
-		OriginalURL: original,
-		ExpiredAt:   time.Now().Add(defaultExpiryTime),
-	}
-}
-
-func createShortURLCreatorExecutor(ctrl *gomock.Controller) *ShortURLCreatorExecutor {
+func createShortURLCreatorExecutor() *ShortURLCreatorExecutor {
 	g := mock_usecase.NewMockURLGeneratorV2()
 	r := mock_usecase.NewMockURLRepositoryV2()
 	u := usecase.NewShortURLCreator(g, r)
