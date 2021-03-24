@@ -25,6 +25,10 @@ func NewShortURLCreator(creator usecase.CreateShortURL) *ShortURLCreator {
 
 // CreateShortURL handles HTTP/2 gRPC request similar to POST in HTTP/1.1.
 func (sc *ShortURLCreator) CreateShortURL(ctx context.Context, request *shortenerv1.CreateShortURLRequest) (*shortenerv1.CreateShortURLResponse, error) {
+	if request == nil {
+		return nil, entity.ErrEmptyURL
+	}
+
 	url, cerr := sc.creator.Create(ctx, request.GetOriginalUrl())
 	if cerr != nil {
 		return nil, cerr
