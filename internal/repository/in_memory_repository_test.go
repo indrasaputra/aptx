@@ -8,8 +8,8 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/indrasaputra/shortener/entity"
-	"github.com/indrasaputra/shortener/internal/repository"
+	"github.com/indrasaputra/url-shortener/entity"
+	"github.com/indrasaputra/url-shortener/internal/repository"
 )
 
 func TestNewInMemoryURLRepository(t *testing.T) {

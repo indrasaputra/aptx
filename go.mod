@@ -1,4 +1,4 @@
-module github.com/indrasaputra/shortener
+module github.com/indrasaputra/url-shortener
 
 go 1.16
 

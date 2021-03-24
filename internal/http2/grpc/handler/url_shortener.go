@@ -5,9 +5,9 @@ import (
 
 	"google.golang.org/protobuf/types/known/timestamppb"
 
-	"github.com/indrasaputra/shortener/entity"
-	shortenerv1 "github.com/indrasaputra/shortener/proto/indrasaputra/shortener/v1"
-	"github.com/indrasaputra/shortener/usecase"
+	"github.com/indrasaputra/url-shortener/entity"
+	shortenerv1 "github.com/indrasaputra/url-shortener/proto/indrasaputra/shortener/v1"
+	"github.com/indrasaputra/url-shortener/usecase"
 )
 
 // ShortURLCreator handles HTTP/2 gRPC request for creating a new short URL.

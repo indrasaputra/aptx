@@ -6,8 +6,8 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 
-	"github.com/indrasaputra/shortener/internal/http2/grpc/handler"
-	mock_usecase "github.com/indrasaputra/shortener/test/mock/usecase"
+	"github.com/indrasaputra/url-shortener/internal/http2/grpc/handler"
+	mock_usecase "github.com/indrasaputra/url-shortener/test/mock/usecase"
 )
 
 type ShortURLCreatorExecutor struct {

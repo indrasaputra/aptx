@@ -3,7 +3,7 @@ package repository
 import (
 	"context"
 
-	"github.com/indrasaputra/shortener/entity"
+	"github.com/indrasaputra/url-shortener/entity"
 )
 
 // InMemoryURLRepository uses memory as storage.

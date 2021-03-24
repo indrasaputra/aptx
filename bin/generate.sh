@@ -5,7 +5,7 @@ set -euo pipefail
 IMAGE_DIR=bin
 
 buf lint
-buf breaking --against '.git#branch=main'
+# buf breaking --against '.git#branch=main'
 buf generate
 
 mkdir -p ${IMAGE_DIR}

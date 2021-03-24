@@ -6,9 +6,9 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/indrasaputra/shortener/entity"
-	mock_usecase "github.com/indrasaputra/shortener/test/mock/usecase"
-	"github.com/indrasaputra/shortener/usecase"
+	"github.com/indrasaputra/url-shortener/entity"
+	mock_usecase "github.com/indrasaputra/url-shortener/test/mock/usecase"
+	"github.com/indrasaputra/url-shortener/usecase"
 )
 
 type ShortURLCreatorExecutor struct {
