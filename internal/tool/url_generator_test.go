@@ -5,7 +5,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/indrasaputra/shortener/internal/tool"
+	"github.com/indrasaputra/url-shortener/internal/tool"
 )
 
 func TestNewShortURLGenerator(t *testing.T) {

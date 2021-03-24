@@ -3,7 +3,7 @@ package mock_usecase
 import (
 	context "context"
 
-	"github.com/indrasaputra/shortener/entity"
+	"github.com/indrasaputra/url-shortener/entity"
 )
 
 // MockURLGeneratorV2 is a mock of URLGenerator interface

@@ -6,7 +6,7 @@ import (
 	"math/big"
 	"strings"
 
-	"github.com/indrasaputra/shortener/entity"
+	"github.com/indrasaputra/url-shortener/entity"
 )
 
 const (

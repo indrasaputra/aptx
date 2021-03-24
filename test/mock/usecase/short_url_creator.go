@@ -10,7 +10,7 @@ import (
 
 	gomock "github.com/golang/mock/gomock"
 
-	entity "github.com/indrasaputra/shortener/entity"
+	entity "github.com/indrasaputra/url-shortener/entity"
 )
 
 // MockCreateShortURL is a mock of CreateShortURL interface

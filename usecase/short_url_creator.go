@@ -5,7 +5,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/indrasaputra/shortener/entity"
+	"github.com/indrasaputra/url-shortener/entity"
 )
 
 const (
