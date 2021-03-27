@@ -8,9 +8,9 @@ import (
 	"github.com/indrasaputra/url-shortener/internal/builder"
 )
 
-func TestBuildGRPCShortURLCreator(t *testing.T) {
-	t.Run("successfully create ShortURLCreator handler", func(t *testing.T) {
-		hdr := builder.BuildGRPCShortURLCreator("http://short-url.com")
+func TestBuildGRPCURLShortener(t *testing.T) {
+	t.Run("successfully create URLShortener handler", func(t *testing.T) {
+		hdr := builder.BuildGRPCURLShortener("http://short-url.com")
 		assert.NotNil(t, hdr)
 	})
 }

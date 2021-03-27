@@ -36,7 +36,7 @@ var (
 		},
 	}
 
-	globalsResponses = createGetAllURlReponse(globalURLs)
+	globalsResponses = createGetAllURLReponse(globalURLs)
 )
 
 type URLShortenerExecutor struct {
@@ -146,7 +146,7 @@ func TestURLShortener_GetAllURL(t *testing.T) {
 	})
 }
 
-func createGetAllURlReponse(urls []*entity.URL) []*shortenerv1.GetAllURLResponse {
+func createGetAllURLReponse(urls []*entity.URL) []*shortenerv1.GetAllURLResponse {
 	result := []*shortenerv1.GetAllURLResponse{}
 	for _, url := range urls {
 		tmp := &shortenerv1.GetAllURLResponse{
