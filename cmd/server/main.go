@@ -17,7 +17,7 @@ func main() {
 
 	server := grpc.NewServer()
 
-	urlCreator := builder.BuildGRPCShortURLCreator(cfg.Domain)
+	urlCreator := builder.BuildGRPCURLShortener(cfg.Domain)
 	shortenerv1.RegisterURLShortenerServiceServer(server, urlCreator)
 
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", cfg.Port))
