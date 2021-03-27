@@ -20,6 +20,7 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type URLShortenerServiceClient interface {
 	CreateShortURL(ctx context.Context, in *CreateShortURLRequest, opts ...grpc.CallOption) (*CreateShortURLResponse, error)
+	GetAllURL(ctx context.Context, in *GetAllURLRequest, opts ...grpc.CallOption) (URLShortenerService_GetAllURLClient, error)
 }
 
 type uRLShortenerServiceClient struct {
@@ -39,11 +40,44 @@ func (c *uRLShortenerServiceClient) CreateShortURL(ctx context.Context, in *Crea
 	return out, nil
 }
 
+func (c *uRLShortenerServiceClient) GetAllURL(ctx context.Context, in *GetAllURLRequest, opts ...grpc.CallOption) (URLShortenerService_GetAllURLClient, error) {
+	stream, err := c.cc.NewStream(ctx, &URLShortenerService_ServiceDesc.Streams[0], "/proto.indrasaputra.shortener.v1.URLShortenerService/GetAllURL", opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &uRLShortenerServiceGetAllURLClient{stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
+}
+
+type URLShortenerService_GetAllURLClient interface {
+	Recv() (*GetAllURLResponse, error)
+	grpc.ClientStream
+}
+
+type uRLShortenerServiceGetAllURLClient struct {
+	grpc.ClientStream
+}
+
+func (x *uRLShortenerServiceGetAllURLClient) Recv() (*GetAllURLResponse, error) {
+	m := new(GetAllURLResponse)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
 // URLShortenerServiceServer is the server API for URLShortenerService service.
 // All implementations must embed UnimplementedURLShortenerServiceServer
 // for forward compatibility
 type URLShortenerServiceServer interface {
 	CreateShortURL(context.Context, *CreateShortURLRequest) (*CreateShortURLResponse, error)
+	GetAllURL(*GetAllURLRequest, URLShortenerService_GetAllURLServer) error
 	mustEmbedUnimplementedURLShortenerServiceServer()
 }
 
@@ -53,6 +87,9 @@ type UnimplementedURLShortenerServiceServer struct {
 
 func (UnimplementedURLShortenerServiceServer) CreateShortURL(context.Context, *CreateShortURLRequest) (*CreateShortURLResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateShortURL not implemented")
+}
+func (UnimplementedURLShortenerServiceServer) GetAllURL(*GetAllURLRequest, URLShortenerService_GetAllURLServer) error {
+	return status.Errorf(codes.Unimplemented, "method GetAllURL not implemented")
 }
 func (UnimplementedURLShortenerServiceServer) mustEmbedUnimplementedURLShortenerServiceServer() {}
 
@@ -85,6 +122,27 @@ func _URLShortenerService_CreateShortURL_Handler(srv interface{}, ctx context.Co
 	return interceptor(ctx, in, info, handler)
 }
 
+func _URLShortenerService_GetAllURL_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(GetAllURLRequest)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
+	}
+	return srv.(URLShortenerServiceServer).GetAllURL(m, &uRLShortenerServiceGetAllURLServer{stream})
+}
+
+type URLShortenerService_GetAllURLServer interface {
+	Send(*GetAllURLResponse) error
+	grpc.ServerStream
+}
+
+type uRLShortenerServiceGetAllURLServer struct {
+	grpc.ServerStream
+}
+
+func (x *uRLShortenerServiceGetAllURLServer) Send(m *GetAllURLResponse) error {
+	return x.ServerStream.SendMsg(m)
+}
+
 // URLShortenerService_ServiceDesc is the grpc.ServiceDesc for URLShortenerService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -97,6 +155,12 @@ var URLShortenerService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _URLShortenerService_CreateShortURL_Handler,
 		},
 	},
-	Streams:  []grpc.StreamDesc{},
+	Streams: []grpc.StreamDesc{
+		{
+			StreamName:    "GetAllURL",
+			Handler:       _URLShortenerService_GetAllURL_Handler,
+			ServerStreams: true,
+		},
+	},
 	Metadata: "proto/indrasaputra/shortener/v1/shortener.proto",
 }
