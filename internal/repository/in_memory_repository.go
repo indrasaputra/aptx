@@ -31,3 +31,13 @@ func (ir *InMemoryURLRepository) Save(ctx context.Context, url *entity.URL) *ent
 	ir.data[url.ShortURL] = url
 	return nil
 }
+
+// GetAll gets all URLs in storage.
+// Since the implementation uses HashMap, the data may be unordered.
+func (ir *InMemoryURLRepository) GetAll(ctx context.Context) ([]*entity.URL, *entity.Error) {
+	urls := []*entity.URL{}
+	for _, url := range ir.data {
+		urls = append(urls, url)
+	}
+	return urls, nil
+}
