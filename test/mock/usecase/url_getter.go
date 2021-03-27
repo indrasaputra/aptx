@@ -50,3 +50,41 @@ func (mr *MockGetURLMockRecorder) GetAll(ctx interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAll", reflect.TypeOf((*MockGetURL)(nil).GetAll), ctx)
 }
+
+// MockGetURLRepository is a mock of GetURLRepository interface
+type MockGetURLRepository struct {
+	ctrl     *gomock.Controller
+	recorder *MockGetURLRepositoryMockRecorder
+}
+
+// MockGetURLRepositoryMockRecorder is the mock recorder for MockGetURLRepository
+type MockGetURLRepositoryMockRecorder struct {
+	mock *MockGetURLRepository
+}
+
+// NewMockGetURLRepository creates a new mock instance
+func NewMockGetURLRepository(ctrl *gomock.Controller) *MockGetURLRepository {
+	mock := &MockGetURLRepository{ctrl: ctrl}
+	mock.recorder = &MockGetURLRepositoryMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use
+func (m *MockGetURLRepository) EXPECT() *MockGetURLRepositoryMockRecorder {
+	return m.recorder
+}
+
+// GetAll mocks base method
+func (m *MockGetURLRepository) GetAll(ctx context.Context) ([]*entity.URL, *entity.Error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetAll", ctx)
+	ret0, _ := ret[0].([]*entity.URL)
+	ret1, _ := ret[1].(*entity.Error)
+	return ret0, ret1
+}
+
+// GetAll indicates an expected call of GetAll
+func (mr *MockGetURLRepositoryMockRecorder) GetAll(ctx interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAll", reflect.TypeOf((*MockGetURLRepository)(nil).GetAll), ctx)
+}
