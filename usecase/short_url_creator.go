@@ -14,20 +14,20 @@ const (
 	shortURLLength    = 7
 )
 
-// CreateShortURL is the interface that defines the short url creation.
+// CreateShortURL is the interface that defines the short URL creation.
 type CreateShortURL interface {
 	// Create creates a short version of the given URL.
 	Create(ctx context.Context, url string) (*entity.URL, *entity.Error)
 }
 
-// URLGenerator defines the short url generator.
+// URLGenerator defines the short URL generator.
 type URLGenerator interface {
 	// Generate generates a short URL with defined length.
 	Generate(length uint) (string, *entity.Error)
 }
 
-// URLRepository defines the repository for URL.
-type URLRepository interface {
+// CreateShortURLRepository defines the repository for URL.
+type CreateShortURLRepository interface {
 	// Save saves the URL in the repository.
 	Save(ctx context.Context, url *entity.URL) *entity.Error
 }
@@ -35,11 +35,11 @@ type URLRepository interface {
 // ShortURLCreator is responsible for creating a unique short URL.
 type ShortURLCreator struct {
 	generator URLGenerator
-	repo      URLRepository
+	repo      CreateShortURLRepository
 }
 
 // NewShortURLCreator creates an instance of ShortURLCreator.
-func NewShortURLCreator(generator URLGenerator, repo URLRepository) *ShortURLCreator {
+func NewShortURLCreator(generator URLGenerator, repo CreateShortURLRepository) *ShortURLCreator {
 	return &ShortURLCreator{
 		generator: generator,
 		repo:      repo,
