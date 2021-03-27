@@ -10,31 +10,57 @@ import (
 	"github.com/indrasaputra/url-shortener/usecase"
 )
 
-// ShortURLCreator handles HTTP/2 gRPC request for creating a new short URL.
-type ShortURLCreator struct {
+// URLShortener handles HTTP/2 gRPC request for URL shortener .
+type URLShortener struct {
 	shortenerv1.UnimplementedURLShortenerServiceServer
 	creator usecase.CreateShortURL
+	getter  usecase.GetURL
 }
 
-// NewShortURLCreator creates an instance of ShortURLCreator.
-func NewShortURLCreator(creator usecase.CreateShortURL) *ShortURLCreator {
-	return &ShortURLCreator{
+// NewURLShortener creates an instance of URLShortener.
+func NewURLShortener(creator usecase.CreateShortURL, getter usecase.GetURL) *URLShortener {
+	return &URLShortener{
 		creator: creator,
+		getter:  getter,
 	}
 }
 
 // CreateShortURL handles HTTP/2 gRPC request similar to POST in HTTP/1.1.
-func (sc *ShortURLCreator) CreateShortURL(ctx context.Context, request *shortenerv1.CreateShortURLRequest) (*shortenerv1.CreateShortURLResponse, error) {
+func (us *URLShortener) CreateShortURL(ctx context.Context, request *shortenerv1.CreateShortURLRequest) (*shortenerv1.CreateShortURLResponse, error) {
 	if request == nil {
 		return nil, entity.ErrEmptyURL
 	}
 
-	url, cerr := sc.creator.Create(ctx, request.GetOriginalUrl())
+	url, cerr := us.creator.Create(ctx, request.GetOriginalUrl())
 	if cerr != nil {
 		return nil, cerr
 	}
 
 	return convertURLToCreateShortURLResponse(url), nil
+}
+
+// GetAllURL handles HTTP/2 gRPC request similar to GET in HTTP/1.1.
+func (us *URLShortener) GetAllURL(request *shortenerv1.GetAllURLRequest, stream shortenerv1.URLShortenerService_GetAllURLServer) error {
+	urls, err := us.getter.GetAll(context.Background())
+	if err != nil {
+		return err
+	}
+
+	for _, url := range urls {
+		resp := convertURLToGetAllURLResponse(url)
+		if serr := stream.Send(resp); serr != nil {
+			return serr
+		}
+	}
+	return nil
+}
+
+func convertURLToGetAllURLResponse(url *entity.URL) *shortenerv1.GetAllURLResponse {
+	return &shortenerv1.GetAllURLResponse{
+		ShortUrl:    url.ShortURL,
+		OriginalUrl: url.OriginalURL,
+		ExpiredAt:   timestamppb.New(url.ExpiredAt),
+	}
 }
 
 func convertURLToCreateShortURLResponse(url *entity.URL) *shortenerv1.CreateShortURLResponse {
