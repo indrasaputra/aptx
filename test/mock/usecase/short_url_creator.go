@@ -89,31 +89,31 @@ func (mr *MockURLGeneratorMockRecorder) Generate(length interface{}) *gomock.Cal
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Generate", reflect.TypeOf((*MockURLGenerator)(nil).Generate), length)
 }
 
-// MockURLRepository is a mock of URLRepository interface
-type MockURLRepository struct {
+// MockCreateShortURLRepository is a mock of CreateShortURLRepository interface
+type MockCreateShortURLRepository struct {
 	ctrl     *gomock.Controller
-	recorder *MockURLRepositoryMockRecorder
+	recorder *MockCreateShortURLRepositoryMockRecorder
 }
 
-// MockURLRepositoryMockRecorder is the mock recorder for MockURLRepository
-type MockURLRepositoryMockRecorder struct {
-	mock *MockURLRepository
+// MockCreateShortURLRepositoryMockRecorder is the mock recorder for MockCreateShortURLRepository
+type MockCreateShortURLRepositoryMockRecorder struct {
+	mock *MockCreateShortURLRepository
 }
 
-// NewMockURLRepository creates a new mock instance
-func NewMockURLRepository(ctrl *gomock.Controller) *MockURLRepository {
-	mock := &MockURLRepository{ctrl: ctrl}
-	mock.recorder = &MockURLRepositoryMockRecorder{mock}
+// NewMockCreateShortURLRepository creates a new mock instance
+func NewMockCreateShortURLRepository(ctrl *gomock.Controller) *MockCreateShortURLRepository {
+	mock := &MockCreateShortURLRepository{ctrl: ctrl}
+	mock.recorder = &MockCreateShortURLRepositoryMockRecorder{mock}
 	return mock
 }
 
 // EXPECT returns an object that allows the caller to indicate expected use
-func (m *MockURLRepository) EXPECT() *MockURLRepositoryMockRecorder {
+func (m *MockCreateShortURLRepository) EXPECT() *MockCreateShortURLRepositoryMockRecorder {
 	return m.recorder
 }
 
 // Save mocks base method
-func (m *MockURLRepository) Save(ctx context.Context, url *entity.URL) *entity.Error {
+func (m *MockCreateShortURLRepository) Save(ctx context.Context, url *entity.URL) *entity.Error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Save", ctx, url)
 	ret0, _ := ret[0].(*entity.Error)
@@ -121,7 +121,7 @@ func (m *MockURLRepository) Save(ctx context.Context, url *entity.URL) *entity.E
 }
 
 // Save indicates an expected call of Save
-func (mr *MockURLRepositoryMockRecorder) Save(ctx, url interface{}) *gomock.Call {
+func (mr *MockCreateShortURLRepositoryMockRecorder) Save(ctx, url interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Save", reflect.TypeOf((*MockURLRepository)(nil).Save), ctx, url)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Save", reflect.TypeOf((*MockCreateShortURLRepository)(nil).Save), ctx, url)
 }

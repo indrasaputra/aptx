@@ -14,7 +14,7 @@ import (
 type ShortURLCreatorExecutor struct {
 	usecase   *usecase.ShortURLCreator
 	generator *mock_usecase.MockURLGeneratorV2
-	repo      *mock_usecase.MockURLRepositoryV2
+	repo      *mock_usecase.MockCreateShortURLRepositoryV2
 }
 
 func TestNewShortURLCreator(t *testing.T) {
@@ -83,7 +83,7 @@ func TestShortURLCreator_Create(t *testing.T) {
 
 func createShortURLCreatorExecutor() *ShortURLCreatorExecutor {
 	g := mock_usecase.NewMockURLGeneratorV2()
-	r := mock_usecase.NewMockURLRepositoryV2()
+	r := mock_usecase.NewMockCreateShortURLRepositoryV2()
 	u := usecase.NewShortURLCreator(g, r)
 
 	return &ShortURLCreatorExecutor{
