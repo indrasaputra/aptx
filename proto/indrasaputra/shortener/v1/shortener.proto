@@ -14,6 +14,12 @@ service URLShortenerService {
       body : "*"
     };
   }
+
+  rpc GetAllURL(GetAllURLRequest) returns (stream GetAllURLResponse) {
+    option (google.api.http) = {
+      get : "/v1/urls"
+    };
+  }
 }
 
 message CreateShortURLRequest {
@@ -23,4 +29,13 @@ message CreateShortURLRequest {
 message CreateShortURLResponse {
   string short_url = 1;
   google.protobuf.Timestamp expired_at = 2;
+}
+
+message GetAllURLRequest {
+}
+
+message GetAllURLResponse {
+  string short_url = 1;
+  string original_url = 2;
+  google.protobuf.Timestamp expired_at = 3;
 }
