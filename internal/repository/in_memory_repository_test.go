@@ -50,6 +50,30 @@ func TestInMemoryURLRepository_Save(t *testing.T) {
 	})
 }
 
+func TestInMemoryURLRepository_GetAll(t *testing.T) {
+	t.Run("empty data returns empty list and nil error", func(t *testing.T) {
+		repo := repository.NewInMemoryURLRepository()
+
+		urls, err := repo.GetAll(context.Background())
+
+		assert.Nil(t, err)
+		assert.Empty(t, urls)
+	})
+
+	t.Run("repository returns as many as data previously stored", func(t *testing.T) {
+		repo := repository.NewInMemoryURLRepository()
+		numberOfURL := 10
+		for i := 0; i < numberOfURL; i++ {
+			repo.Save(context.Background(), createURL(fmt.Sprintf("http://original-random-%d.url", i), fmt.Sprintf("http://short-random-%d.url", i)))
+		}
+
+		urls, err := repo.GetAll(context.Background())
+
+		assert.Nil(t, err)
+		assert.Equal(t, numberOfURL, len(urls))
+	})
+}
+
 func createURL(original, short string) *entity.URL {
 	return &entity.URL{
 		ShortURL:    short,
