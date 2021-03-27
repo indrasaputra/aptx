@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"io"
 	"log"
 
 	"google.golang.org/grpc"
@@ -19,15 +20,51 @@ func main() {
 	checkError(err)
 	defer conn.Close()
 
-	urlCreator := shortenerv1.NewURLShortenerServiceClient(conn)
+	shortener := shortenerv1.NewURLShortenerServiceClient(conn)
+	fmt.Println("start send...")
+	send(shortener)
+	fmt.Printf("end send\n\n")
+	fmt.Println("start get all...")
+	getAll(shortener)
+	fmt.Printf("end get all\n\n")
+}
 
-	req := &shortenerv1.CreateShortURLRequest{OriginalUrl: "http://this-is-a-very-long-url.url"}
-	resp, err := urlCreator.CreateShortURL(context.Background(), req)
+func send(shortener shortenerv1.URLShortenerServiceClient) {
+	urls := []string{
+		"http://this-is-a-very-long-url-1.url",
+		"http://this-is-a-very-long-url-2.url",
+		"http://this-is-a-very-long-url-3.url",
+	}
+
+	for _, url := range urls {
+		req := &shortenerv1.CreateShortURLRequest{OriginalUrl: url}
+		resp, err := shortener.CreateShortURL(context.Background(), req)
+		if err != nil {
+			log.Printf("create short url: %v", err)
+			return
+		}
+		fmt.Printf("short url: %s\nexpired at: %s\n", resp.GetShortUrl(), resp.GetExpiredAt().AsTime().String())
+	}
+}
+
+func getAll(shortener shortenerv1.URLShortenerServiceClient) {
+	stream, err := shortener.GetAllURL(context.Background(), &shortenerv1.GetAllURLRequest{})
 	if err != nil {
-		log.Printf("create short url: %s", err.Error())
+		log.Printf("get all: %v\n", err)
 		return
 	}
-	fmt.Printf("short url: %s\nexpired at: %s\n", resp.GetShortUrl(), resp.GetExpiredAt().AsTime().String())
+
+	for {
+		resp, serr := stream.Recv()
+		if serr == io.EOF {
+			break
+		}
+		if serr != nil {
+			fmt.Printf("stream err: %v\n", serr)
+			break
+		}
+		fmt.Printf("short url: %s\noriginal url: %s\nexpired at: %s\n", resp.GetShortUrl(), resp.GetOriginalUrl(), resp.GetExpiredAt().AsTime().String())
+	}
 }
 
 func checkError(err error) {
