@@ -4,6 +4,7 @@ set -euo pipefail
 
 for file in `find . -name '*.go' | grep -v proto `; do
     if `grep -q 'interface {' ${file}`; then
-        mockgen -source=${file} -destination=test/mock/${file}
+        dest=${file//internal\//}
+        mockgen -source=${file} -destination=test/mock/${dest}
     fi
 done
