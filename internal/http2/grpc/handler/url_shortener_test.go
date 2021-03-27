@@ -2,6 +2,7 @@ package handler_test
 
 import (
 	"context"
+	"errors"
 	"testing"
 	"time"
 
@@ -12,30 +13,54 @@ import (
 	"github.com/indrasaputra/url-shortener/entity"
 	"github.com/indrasaputra/url-shortener/internal/http2/grpc/handler"
 	shortenerv1 "github.com/indrasaputra/url-shortener/proto/indrasaputra/shortener/v1"
+	mock_grpc "github.com/indrasaputra/url-shortener/test/mock/http2/grpc"
 	mock_usecase "github.com/indrasaputra/url-shortener/test/mock/usecase"
 )
 
-type ShortURLCreatorExecutor struct {
-	handler *handler.ShortURLCreator
-	usecase *mock_usecase.MockCreateShortURL
+var (
+	globalURLs = []*entity.URL{
+		{
+			ShortURL:    "http://short-1.url",
+			OriginalURL: "http://original-1.url",
+			ExpiredAt:   time.Now().Add(1 * time.Minute),
+		},
+		{
+			ShortURL:    "http://short-2.url",
+			OriginalURL: "http://original-2.url",
+			ExpiredAt:   time.Now().Add(2 * time.Minute),
+		},
+		{
+			ShortURL:    "http://short-3.url",
+			OriginalURL: "http://original-3.url",
+			ExpiredAt:   time.Now().Add(2 * time.Minute),
+		},
+	}
+
+	globalsResponses = createGetAllURlReponse(globalURLs)
+)
+
+type URLShortenerExecutor struct {
+	handler *handler.URLShortener
+	creator *mock_usecase.MockCreateShortURL
+	getter  *mock_usecase.MockGetURL
 }
 
-func TestNewShortURLCreator(t *testing.T) {
+func TestNewURLShortener(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	t.Run("successful create an instance of ShortURLCreator", func(t *testing.T) {
-		exec := createShortURLCreatorExecutor(ctrl)
+	t.Run("successful create an instance of URLShortener", func(t *testing.T) {
+		exec := createURLShortenerExecutor(ctrl)
 		assert.NotNil(t, exec.handler)
 	})
 }
 
-func TestShortURLCreator_CreateShortURL(t *testing.T) {
+func TestURLShortener_CreateShortURL(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
 	t.Run("empty url is prohibited", func(t *testing.T) {
-		exec := createShortURLCreatorExecutor(ctrl)
+		exec := createURLShortenerExecutor(ctrl)
 
 		resp, err := exec.handler.CreateShortURL(context.Background(), nil)
 
@@ -45,9 +70,9 @@ func TestShortURLCreator_CreateShortURL(t *testing.T) {
 	})
 
 	t.Run("creator usecase returns error", func(t *testing.T) {
-		exec := createShortURLCreatorExecutor(ctrl)
+		exec := createURLShortenerExecutor(ctrl)
 		req := &shortenerv1.CreateShortURLRequest{OriginalUrl: "http://original-1.url"}
-		exec.usecase.EXPECT().Create(context.Background(), req.GetOriginalUrl()).Return(nil, entity.ErrInternalServer)
+		exec.creator.EXPECT().Create(context.Background(), req.GetOriginalUrl()).Return(nil, entity.ErrInternalServer)
 
 		resp, err := exec.handler.CreateShortURL(context.Background(), req)
 
@@ -57,11 +82,11 @@ func TestShortURLCreator_CreateShortURL(t *testing.T) {
 	})
 
 	t.Run("successfully create a shorturl", func(t *testing.T) {
-		exec := createShortURLCreatorExecutor(ctrl)
+		exec := createURLShortenerExecutor(ctrl)
 		req := &shortenerv1.CreateShortURLRequest{OriginalUrl: "http://original-1.url"}
 		now := time.Now()
 		url := &entity.URL{ShortURL: "http://short-1.url", ExpiredAt: now}
-		exec.usecase.EXPECT().Create(context.Background(), req.GetOriginalUrl()).Return(url, nil)
+		exec.creator.EXPECT().Create(context.Background(), req.GetOriginalUrl()).Return(url, nil)
 
 		resp, err := exec.handler.CreateShortURL(context.Background(), req)
 
@@ -72,11 +97,75 @@ func TestShortURLCreator_CreateShortURL(t *testing.T) {
 	})
 }
 
-func createShortURLCreatorExecutor(ctrl *gomock.Controller) *ShortURLCreatorExecutor {
+func TestURLShortener_GetAllURL(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	t.Run("getter usecase returns error", func(t *testing.T) {
+		exec := createURLShortenerExecutor(ctrl)
+		req := &shortenerv1.GetAllURLRequest{}
+		stream := mock_grpc.NewMockURLShortenerService_GetAllURLServer(ctrl)
+		exec.getter.EXPECT().GetAll(context.Background()).Return([]*entity.URL{}, entity.ErrInternalServer)
+
+		err := exec.handler.GetAllURL(req, stream)
+
+		assert.NotNil(t, err)
+	})
+
+	t.Run("stream can't send response", func(t *testing.T) {
+		exec := createURLShortenerExecutor(ctrl)
+		req := &shortenerv1.GetAllURLRequest{}
+		resp := &shortenerv1.GetAllURLResponse{
+			ShortUrl:    globalURLs[0].ShortURL,
+			OriginalUrl: globalURLs[0].OriginalURL,
+			ExpiredAt:   timestamppb.New(globalURLs[0].ExpiredAt),
+		}
+		stream := mock_grpc.NewMockURLShortenerService_GetAllURLServer(ctrl)
+
+		exec.getter.EXPECT().GetAll(context.Background()).Return(globalURLs, nil)
+		stream.EXPECT().Send(resp).Return(errors.New("stream error"))
+
+		err := exec.handler.GetAllURL(req, stream)
+
+		assert.NotNil(t, err)
+	})
+
+	t.Run("stream successfully send all response", func(t *testing.T) {
+		exec := createURLShortenerExecutor(ctrl)
+		req := &shortenerv1.GetAllURLRequest{}
+		stream := mock_grpc.NewMockURLShortenerService_GetAllURLServer(ctrl)
+
+		exec.getter.EXPECT().GetAll(context.Background()).Return(globalURLs, nil)
+		stream.EXPECT().Send(globalsResponses[0]).Return(nil)
+		stream.EXPECT().Send(globalsResponses[1]).Return(nil)
+		stream.EXPECT().Send(globalsResponses[2]).Return(nil)
+
+		err := exec.handler.GetAllURL(req, stream)
+
+		assert.Nil(t, err)
+	})
+}
+
+func createGetAllURlReponse(urls []*entity.URL) []*shortenerv1.GetAllURLResponse {
+	result := []*shortenerv1.GetAllURLResponse{}
+	for _, url := range urls {
+		tmp := &shortenerv1.GetAllURLResponse{
+			ShortUrl:    url.ShortURL,
+			OriginalUrl: url.OriginalURL,
+			ExpiredAt:   timestamppb.New(url.ExpiredAt),
+		}
+		result = append(result, tmp)
+	}
+	return result
+}
+
+func createURLShortenerExecutor(ctrl *gomock.Controller) *URLShortenerExecutor {
 	c := mock_usecase.NewMockCreateShortURL(ctrl)
-	h := handler.NewShortURLCreator(c)
-	return &ShortURLCreatorExecutor{
+	g := mock_usecase.NewMockGetURL(ctrl)
+	h := handler.NewURLShortener(c, g)
+	return &URLShortenerExecutor{
 		handler: h,
-		usecase: c,
+		creator: c,
+		getter:  g,
 	}
 }
