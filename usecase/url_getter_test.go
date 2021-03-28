@@ -74,6 +74,45 @@ func TestURLGetter_GetAll(t *testing.T) {
 	})
 }
 
+func TestURLGetter_GetByShortURL(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	shortURL := "http://short-1.url"
+
+	t.Run("repository returns error", func(t *testing.T) {
+		exec := createURLGetterExecutor(ctrl)
+		exec.repo.EXPECT().GetByShortURL(context.Background(), shortURL).Return(&entity.URL{}, entity.ErrInternalServer)
+
+		urls, err := exec.usecase.GetByShortURL(context.Background(), shortURL)
+
+		assert.NotNil(t, err)
+		assert.Equal(t, entity.ErrInternalServer, err)
+		assert.Empty(t, urls)
+	})
+
+	t.Run("url can't be found", func(t *testing.T) {
+		exec := createURLGetterExecutor(ctrl)
+		exec.repo.EXPECT().GetByShortURL(context.Background(), shortURL).Return(&entity.URL{}, entity.ErrURLNotFound)
+
+		urls, err := exec.usecase.GetByShortURL(context.Background(), shortURL)
+
+		assert.NotNil(t, err)
+		assert.Equal(t, entity.ErrURLNotFound, err)
+		assert.Empty(t, urls)
+	})
+
+	t.Run("success get single url", func(t *testing.T) {
+		exec := createURLGetterExecutor(ctrl)
+		exec.repo.EXPECT().GetByShortURL(context.Background(), shortURL).Return(globalURLs[0], nil)
+
+		urls, err := exec.usecase.GetByShortURL(context.Background(), shortURL)
+
+		assert.Nil(t, err)
+		assert.Equal(t, globalURLs[0], urls)
+	})
+}
+
 func createURLGetterExecutor(ctrl *gomock.Controller) *URLGetterExecutor {
 	r := mock_usecase.NewMockGetURLRepository(ctrl)
 	u := usecase.NewURLGetter(r)

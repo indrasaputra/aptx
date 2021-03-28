@@ -11,6 +11,8 @@ var (
 	ErrEmptyURL = NewError("02-001", "URL is empty")
 	// ErrDuplicatedShortURL is returned when the generated short URL already exists in the system.
 	ErrDuplicatedShortURL = NewError("02-002", "Short URL already exists")
+	// ErrURLNotFound is returned when the URL can't be found in the system.
+	ErrURLNotFound = NewError("02-003", "URL not found")
 )
 
 // Error represents a data structure for error.

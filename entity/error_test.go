@@ -9,12 +9,16 @@ import (
 	"github.com/indrasaputra/url-shortener/entity"
 )
 
+const (
+	errorCode = "01-001"
+)
+
 func TestNewError(t *testing.T) {
 	t.Run("successfully create an instance of Error", func(t *testing.T) {
-		err := entity.NewError("01-001", "Internal server error")
+		err := entity.NewError(errorCode, "Internal server error")
 
 		assert.NotNil(t, err)
-		assert.Equal(t, "01-001", err.Code)
+		assert.Equal(t, errorCode, err.Code)
 		assert.Equal(t, "Internal server error", err.Message)
 		assert.Equal(t, "Internal server error", err.Error())
 	})
@@ -28,7 +32,7 @@ func TestError_Error(t *testing.T) {
 		}
 
 		for _, msg := range messages {
-			err := entity.NewError("01-001", msg)
+			err := entity.NewError(errorCode, msg)
 			assert.Equal(t, msg, err.Error())
 		}
 	})
@@ -40,7 +44,7 @@ func TestError_Error(t *testing.T) {
 		}
 
 		for _, msg := range messages {
-			err := entity.NewError("01-001", "public message")
+			err := entity.NewError(errorCode, "public message")
 			err = entity.WrapError(err, msg)
 
 			assert.Equal(t, fmt.Sprintf("public message. %s", msg), err.Error())
@@ -50,7 +54,7 @@ func TestError_Error(t *testing.T) {
 
 func TestWrapError(t *testing.T) {
 	t.Run("new error has the same code and public message as base", func(t *testing.T) {
-		ori := entity.NewError("01-001", "initial message")
+		ori := entity.NewError(errorCode, "initial message")
 
 		err := entity.WrapError(ori, "additional message #1")
 		assert.Equal(t, ori.Code, err.Code)
@@ -58,7 +62,7 @@ func TestWrapError(t *testing.T) {
 	})
 
 	t.Run("message is wrapped exactly at the end of current message and separated by :", func(t *testing.T) {
-		err := entity.NewError("01-001", "initial message")
+		err := entity.NewError(errorCode, "initial message")
 
 		err = entity.WrapError(err, "additional message #1")
 		assert.Equal(t, "initial message. additional message #1", err.Error())
