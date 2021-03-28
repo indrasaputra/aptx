@@ -33,3 +33,12 @@ cover:
 coverhtml:
 	go test -v -race ./... -coverprofile=coverage.out
 	go tool cover -html=coverage.out
+
+compile-server:
+	env GO111MODULE=on CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -ldflags '-extldflags "-static"' -o url-shortener cmd/server/main.go
+
+docker-build-server:
+	docker build -t url-shortener:latest .
+
+docker-run-server:
+	docker run -p 8080:8080 --env-file .env url-shortener:latest

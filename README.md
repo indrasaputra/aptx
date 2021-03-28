@@ -4,7 +4,7 @@
 [![Workflow](https://github.com/indrasaputra/url-shortener/workflows/Test/badge.svg)](https://github.com/indrasaputra/url-shortener/actions)
 [![codecov](https://codecov.io/gh/indrasaputra/url-shortener/branch/main/graph/badge.svg?token=VI4V05KUEO)](https://codecov.io/gh/indrasaputra/url-shortener)
 [![Maintainability](https://api.codeclimate.com/v1/badges/e28a29089f4c66303cb0/maintainability)](https://codeclimate.com/github/indrasaputra/url-shortener/maintainability)
-[![Quality gate](https://sonarcloud.io/api/project_badges/quality_gate?project=indrasaputra_url-shortener)](https://sonarcloud.io/dashboard?id=indrasaputra_url-shortener)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=indrasaputra_url-shortener&metric=alert_status)](https://sonarcloud.io/dashboard?id=indrasaputra_url-shortener)
 [![Go Reference](https://pkg.go.dev/badge/github.com/indrasaputra/url-shortener.svg)](https://pkg.go.dev/github.com/indrasaputra/url-shortener)
 
 ## Onboarding and Development Guide
