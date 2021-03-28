@@ -40,5 +40,13 @@ compile-server:
 docker-build-server:
 	docker build -t url-shortener:latest .
 
+docker-build-envoy:
+	docker build -t url-shortener-envoy:latest -f bin/envoy/Dockerfile .
+
+docker-build-all: docker-build-server docker-build-envoy
+
 docker-run-server:
 	docker run -p 8080:8080 --env-file .env url-shortener:latest
+
+docker-run-envoy:
+	docker run -p 9901:9901 -p 9090:9090 url-shortener-envoy:latest
