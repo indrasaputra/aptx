@@ -27,6 +27,9 @@ func main() {
 	fmt.Println("start get all...")
 	getAll(shortener)
 	fmt.Printf("end get all\n\n")
+	fmt.Println("start get detail...")
+	getDetail(shortener)
+	fmt.Printf("end get detail\n\n")
 }
 
 func send(shortener shortenerv1.URLShortenerServiceClient) {
@@ -64,6 +67,31 @@ func getAll(shortener shortenerv1.URLShortenerServiceClient) {
 			break
 		}
 		fmt.Printf("short url: %s\noriginal url: %s\nexpired at: %s\n", resp.GetShortUrl(), resp.GetOriginalUrl(), resp.GetExpiredAt().AsTime().String())
+	}
+}
+
+func getDetail(shortener shortenerv1.URLShortenerServiceClient) {
+	stream, err := shortener.GetAllURL(context.Background(), &shortenerv1.GetAllURLRequest{})
+	if err != nil {
+		log.Printf("get first detail: %v\n", err)
+		return
+	}
+
+	for {
+		resp, serr := stream.Recv()
+		if serr == io.EOF {
+			break
+		}
+		if serr != nil {
+			fmt.Printf("in get detail - stream err: %v\n", serr)
+			break
+		}
+		url, derr := shortener.GetURLDetail(context.Background(), &shortenerv1.GetURLDetailRequest{ShortUrl: resp.GetShortUrl()})
+		if derr != nil {
+			log.Printf("get detail: %v\n", derr)
+			return
+		}
+		fmt.Printf("short url: %s\noriginal url: %s\nexpired at: %s\n", url.GetShortUrl(), url.GetOriginalUrl(), url.GetExpiredAt().AsTime().String())
 	}
 }
 
