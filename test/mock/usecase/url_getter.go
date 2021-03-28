@@ -51,6 +51,21 @@ func (mr *MockGetURLMockRecorder) GetAll(ctx interface{}) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAll", reflect.TypeOf((*MockGetURL)(nil).GetAll), ctx)
 }
 
+// GetByShortURL mocks base method
+func (m *MockGetURL) GetByShortURL(ctx context.Context, shortURL string) (*entity.URL, *entity.Error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetByShortURL", ctx, shortURL)
+	ret0, _ := ret[0].(*entity.URL)
+	ret1, _ := ret[1].(*entity.Error)
+	return ret0, ret1
+}
+
+// GetByShortURL indicates an expected call of GetByShortURL
+func (mr *MockGetURLMockRecorder) GetByShortURL(ctx, shortURL interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByShortURL", reflect.TypeOf((*MockGetURL)(nil).GetByShortURL), ctx, shortURL)
+}
+
 // MockGetURLRepository is a mock of GetURLRepository interface
 type MockGetURLRepository struct {
 	ctrl     *gomock.Controller
@@ -87,4 +102,19 @@ func (m *MockGetURLRepository) GetAll(ctx context.Context) ([]*entity.URL, *enti
 func (mr *MockGetURLRepositoryMockRecorder) GetAll(ctx interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAll", reflect.TypeOf((*MockGetURLRepository)(nil).GetAll), ctx)
+}
+
+// GetByShortURL mocks base method
+func (m *MockGetURLRepository) GetByShortURL(ctx context.Context, shortURL string) (*entity.URL, *entity.Error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetByShortURL", ctx, shortURL)
+	ret0, _ := ret[0].(*entity.URL)
+	ret1, _ := ret[1].(*entity.Error)
+	return ret0, ret1
+}
+
+// GetByShortURL indicates an expected call of GetByShortURL
+func (mr *MockGetURLRepositoryMockRecorder) GetByShortURL(ctx, shortURL interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByShortURL", reflect.TypeOf((*MockGetURLRepository)(nil).GetByShortURL), ctx, shortURL)
 }
