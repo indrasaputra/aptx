@@ -62,16 +62,44 @@ func TestInMemoryURLRepository_GetAll(t *testing.T) {
 
 	t.Run("repository returns as many as data previously stored", func(t *testing.T) {
 		repo := repository.NewInMemoryURLRepository()
-		numberOfURL := 10
-		for i := 0; i < numberOfURL; i++ {
-			repo.Save(context.Background(), createURL(fmt.Sprintf("http://original-random-%d.url", i), fmt.Sprintf("http://short-random-%d.url", i)))
-		}
+		fillRepository(repo, 10)
 
 		urls, err := repo.GetAll(context.Background())
 
 		assert.Nil(t, err)
-		assert.Equal(t, numberOfURL, len(urls))
+		assert.Equal(t, 10, len(urls))
 	})
+}
+
+func TestInMemoryURLRepository_GetByShortURL(t *testing.T) {
+	t.Run("wanted URL doesn't exist", func(t *testing.T) {
+		repo := repository.NewInMemoryURLRepository()
+		fillRepository(repo, 10)
+
+		url, err := repo.GetByShortURL(context.Background(), "http://not-found-short.url")
+
+		assert.NotNil(t, err)
+		assert.Equal(t, entity.ErrURLNotFound, err)
+		assert.Nil(t, url)
+	})
+
+	t.Run("successfully get single url", func(t *testing.T) {
+		repo := repository.NewInMemoryURLRepository()
+		fillRepository(repo, 10)
+
+		url, err := repo.GetByShortURL(context.Background(), "http://short-random-1.url")
+
+		assert.Nil(t, err)
+		assert.NotNil(t, url)
+		assert.Equal(t, "http://original-random-1.url", url.OriginalURL)
+		assert.Equal(t, "http://short-random-1.url", url.ShortURL)
+	})
+}
+
+func fillRepository(repo *repository.InMemoryURLRepository, numberOfURL int) {
+	for i := 0; i < numberOfURL; i++ {
+		repo.Save(context.Background(), createURL(fmt.Sprintf("http://original-random-%d.url", i), fmt.Sprintf("http://short-random-%d.url", i)))
+	}
 }
 
 func createURL(original, short string) *entity.URL {
