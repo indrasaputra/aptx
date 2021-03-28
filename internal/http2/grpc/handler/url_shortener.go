@@ -40,6 +40,7 @@ func (us *URLShortener) CreateShortURL(ctx context.Context, request *shortenerv1
 }
 
 // GetAllURL handles HTTP/2 gRPC request similar to GET in HTTP/1.1.
+// Its specific job is to get all available URLs in the system.
 func (us *URLShortener) GetAllURL(request *shortenerv1.GetAllURLRequest, stream shortenerv1.URLShortenerService_GetAllURLServer) error {
 	urls, err := us.getter.GetAll(context.Background())
 	if err != nil {
@@ -55,8 +56,30 @@ func (us *URLShortener) GetAllURL(request *shortenerv1.GetAllURLRequest, stream 
 	return nil
 }
 
+// GetURLDetail handles HTTP/2 gRPC request similar to GET in HTTP/1.1.
+// Its specific job is to get a detail of a single short URL.
+func (us *URLShortener) GetURLDetail(ctx context.Context, request *shortenerv1.GetURLDetailRequest) (*shortenerv1.GetURLDetailResponse, error) {
+	if request == nil {
+		return nil, entity.ErrEmptyURL
+	}
+
+	url, err := us.getter.GetByShortURL(ctx, request.GetShortUrl())
+	if err != nil {
+		return nil, err
+	}
+	return convertURLToGetURLDetailResponse(url), nil
+}
+
 func convertURLToGetAllURLResponse(url *entity.URL) *shortenerv1.GetAllURLResponse {
 	return &shortenerv1.GetAllURLResponse{
+		ShortUrl:    url.ShortURL,
+		OriginalUrl: url.OriginalURL,
+		ExpiredAt:   timestamppb.New(url.ExpiredAt),
+	}
+}
+
+func convertURLToGetURLDetailResponse(url *entity.URL) *shortenerv1.GetURLDetailResponse {
+	return &shortenerv1.GetURLDetailResponse{
 		ShortUrl:    url.ShortURL,
 		OriginalUrl: url.OriginalURL,
 		ExpiredAt:   timestamppb.New(url.ExpiredAt),

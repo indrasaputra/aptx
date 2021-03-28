@@ -146,6 +146,59 @@ func TestURLShortener_GetAllURL(t *testing.T) {
 	})
 }
 
+func TestURLShortener_GetURLDetail(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	t.Run("empty url is prohibited", func(t *testing.T) {
+		exec := createURLShortenerExecutor(ctrl)
+
+		resp, err := exec.handler.GetURLDetail(context.Background(), nil)
+
+		assert.NotNil(t, err)
+		assert.Equal(t, entity.ErrEmptyURL, err)
+		assert.Nil(t, resp)
+	})
+
+	t.Run("getter usecase returns error", func(t *testing.T) {
+		exec := createURLShortenerExecutor(ctrl)
+		req := &shortenerv1.GetURLDetailRequest{ShortUrl: "http://short-1.url"}
+		exec.getter.EXPECT().GetByShortURL(context.Background(), req.GetShortUrl()).Return(nil, entity.ErrInternalServer)
+
+		resp, err := exec.handler.GetURLDetail(context.Background(), req)
+
+		assert.NotNil(t, err)
+		assert.Equal(t, entity.ErrInternalServer, err)
+		assert.Nil(t, resp)
+	})
+
+	t.Run("url can't be found", func(t *testing.T) {
+		exec := createURLShortenerExecutor(ctrl)
+		req := &shortenerv1.GetURLDetailRequest{ShortUrl: "http://short-1.url"}
+		exec.getter.EXPECT().GetByShortURL(context.Background(), req.GetShortUrl()).Return(nil, entity.ErrURLNotFound)
+
+		resp, err := exec.handler.GetURLDetail(context.Background(), req)
+
+		assert.NotNil(t, err)
+		assert.Equal(t, entity.ErrURLNotFound, err)
+		assert.Nil(t, resp)
+	})
+
+	t.Run("successfully get a single url", func(t *testing.T) {
+		exec := createURLShortenerExecutor(ctrl)
+		req := &shortenerv1.GetURLDetailRequest{ShortUrl: "http://short-1.url"}
+		exec.getter.EXPECT().GetByShortURL(context.Background(), req.GetShortUrl()).Return(globalURLs[0], nil)
+
+		resp, err := exec.handler.GetURLDetail(context.Background(), req)
+
+		assert.Nil(t, err)
+		assert.NotNil(t, resp)
+		assert.Equal(t, "http://short-1.url", resp.GetShortUrl())
+		assert.Equal(t, "http://original-1.url", resp.GetOriginalUrl())
+		assert.Equal(t, timestamppb.New(globalURLs[0].ExpiredAt), resp.GetExpiredAt())
+	})
+}
+
 func createGetAllURLReponse(urls []*entity.URL) []*shortenerv1.GetAllURLResponse {
 	result := []*shortenerv1.GetAllURLResponse{}
 	for _, url := range urls {
