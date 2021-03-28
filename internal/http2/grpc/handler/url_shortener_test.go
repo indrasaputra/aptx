@@ -71,7 +71,7 @@ func TestURLShortener_CreateShortURL(t *testing.T) {
 
 	t.Run("creator usecase returns error", func(t *testing.T) {
 		exec := createURLShortenerExecutor(ctrl)
-		req := &shortenerv1.CreateShortURLRequest{OriginalUrl: "http://original-1.url"}
+		req := &shortenerv1.CreateShortURLRequest{OriginalUrl: globalURLs[0].OriginalURL}
 		exec.creator.EXPECT().Create(context.Background(), req.GetOriginalUrl()).Return(nil, entity.ErrInternalServer)
 
 		resp, err := exec.handler.CreateShortURL(context.Background(), req)
@@ -83,17 +83,15 @@ func TestURLShortener_CreateShortURL(t *testing.T) {
 
 	t.Run("successfully create a shorturl", func(t *testing.T) {
 		exec := createURLShortenerExecutor(ctrl)
-		req := &shortenerv1.CreateShortURLRequest{OriginalUrl: "http://original-1.url"}
-		now := time.Now()
-		url := &entity.URL{ShortURL: "http://short-1.url", ExpiredAt: now}
-		exec.creator.EXPECT().Create(context.Background(), req.GetOriginalUrl()).Return(url, nil)
+		req := &shortenerv1.CreateShortURLRequest{OriginalUrl: globalURLs[0].OriginalURL}
+		exec.creator.EXPECT().Create(context.Background(), req.GetOriginalUrl()).Return(globalURLs[0], nil)
 
 		resp, err := exec.handler.CreateShortURL(context.Background(), req)
 
 		assert.Nil(t, err)
 		assert.NotNil(t, resp)
-		assert.Equal(t, "http://short-1.url", resp.GetShortUrl())
-		assert.Equal(t, timestamppb.New(now), resp.GetExpiredAt())
+		assert.Equal(t, globalURLs[0].ShortURL, resp.GetShortUrl())
+		assert.Equal(t, timestamppb.New(globalURLs[0].ExpiredAt), resp.GetExpiredAt())
 	})
 }
 
@@ -162,7 +160,7 @@ func TestURLShortener_GetURLDetail(t *testing.T) {
 
 	t.Run("getter usecase returns error", func(t *testing.T) {
 		exec := createURLShortenerExecutor(ctrl)
-		req := &shortenerv1.GetURLDetailRequest{ShortUrl: "http://short-1.url"}
+		req := &shortenerv1.GetURLDetailRequest{ShortUrl: globalURLs[0].ShortURL}
 		exec.getter.EXPECT().GetByShortURL(context.Background(), req.GetShortUrl()).Return(nil, entity.ErrInternalServer)
 
 		resp, err := exec.handler.GetURLDetail(context.Background(), req)
@@ -174,7 +172,7 @@ func TestURLShortener_GetURLDetail(t *testing.T) {
 
 	t.Run("url can't be found", func(t *testing.T) {
 		exec := createURLShortenerExecutor(ctrl)
-		req := &shortenerv1.GetURLDetailRequest{ShortUrl: "http://short-1.url"}
+		req := &shortenerv1.GetURLDetailRequest{ShortUrl: globalURLs[0].ShortURL}
 		exec.getter.EXPECT().GetByShortURL(context.Background(), req.GetShortUrl()).Return(nil, entity.ErrURLNotFound)
 
 		resp, err := exec.handler.GetURLDetail(context.Background(), req)
@@ -186,15 +184,15 @@ func TestURLShortener_GetURLDetail(t *testing.T) {
 
 	t.Run("successfully get a single url", func(t *testing.T) {
 		exec := createURLShortenerExecutor(ctrl)
-		req := &shortenerv1.GetURLDetailRequest{ShortUrl: "http://short-1.url"}
+		req := &shortenerv1.GetURLDetailRequest{ShortUrl: globalURLs[0].ShortURL}
 		exec.getter.EXPECT().GetByShortURL(context.Background(), req.GetShortUrl()).Return(globalURLs[0], nil)
 
 		resp, err := exec.handler.GetURLDetail(context.Background(), req)
 
 		assert.Nil(t, err)
 		assert.NotNil(t, resp)
-		assert.Equal(t, "http://short-1.url", resp.GetShortUrl())
-		assert.Equal(t, "http://original-1.url", resp.GetOriginalUrl())
+		assert.Equal(t, globalURLs[0].ShortURL, resp.GetShortUrl())
+		assert.Equal(t, globalURLs[0].OriginalURL, resp.GetOriginalUrl())
 		assert.Equal(t, timestamppb.New(globalURLs[0].ExpiredAt), resp.GetExpiredAt())
 	})
 }

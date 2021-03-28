@@ -10,25 +10,27 @@ import (
 )
 
 const (
-	errorCode = "01-001"
+	errorCode                  = "01-001"
+	errorInternalServerMessage = "Internal server error"
+	errorUnauthorizedMessage   = "Unauthorized"
 )
 
 func TestNewError(t *testing.T) {
 	t.Run("successfully create an instance of Error", func(t *testing.T) {
-		err := entity.NewError(errorCode, "Internal server error")
+		err := entity.NewError(errorCode, errorInternalServerMessage)
 
 		assert.NotNil(t, err)
 		assert.Equal(t, errorCode, err.Code)
-		assert.Equal(t, "Internal server error", err.Message)
-		assert.Equal(t, "Internal server error", err.Error())
+		assert.Equal(t, errorInternalServerMessage, err.Message)
+		assert.Equal(t, errorInternalServerMessage, err.Error())
 	})
 }
 
 func TestError_Error(t *testing.T) {
 	t.Run("internal message is derived from public message", func(t *testing.T) {
 		messages := []string{
-			"Internal server error",
-			"Unauthorized",
+			errorInternalServerMessage,
+			errorUnauthorizedMessage,
 		}
 
 		for _, msg := range messages {
