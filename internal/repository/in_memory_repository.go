@@ -41,3 +41,13 @@ func (ir *InMemoryURLRepository) GetAll(ctx context.Context) ([]*entity.URL, *en
 	}
 	return urls, nil
 }
+
+// GetByShortURL gets a single URLs in storage.
+// If the URL can't be found, it returns ErrURLNotFound.
+func (ir *InMemoryURLRepository) GetByShortURL(ctx context.Context, shortURL string) (*entity.URL, *entity.Error) {
+	url, found := ir.data[shortURL]
+	if !found {
+		return nil, entity.ErrURLNotFound
+	}
+	return url, nil
+}
