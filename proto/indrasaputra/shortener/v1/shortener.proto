@@ -71,3 +71,26 @@ message URL {
   google.protobuf.Timestamp expired_at = 4;
   google.protobuf.Timestamp created_at = 5;
 }
+
+message URLShortenerError {
+  URLShortenerErrorCode error_code = 1;
+}
+
+enum URLShortenerErrorCode {
+  // Default enum code according to
+  // https://medium.com/@akhaku/protobuf-definition-best-practices-87f281576f31.
+  UNKNOWN_URL_SHORTENER_ERROR_CODE = 0;
+
+  // Unexpected behavior occured in system.
+  INTERNAL = 1;
+
+  // URL instance is empty or nil.
+  EMPTY_URL = 2;
+
+  // Short URL already exists.
+  // The uniqueness of a short URL is represented by code or short URL.
+  ALREADY_EXISTS = 3;
+
+  // URL not found in system.
+  NOT_FOUND = 4;
+}
