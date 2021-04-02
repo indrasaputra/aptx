@@ -20,15 +20,15 @@ func NewInMemoryURLRepository() *InMemoryURLRepository {
 }
 
 // Save saves a new data into storage.
-// It checks whether the short URL already exists in the storage.
+// It checks whether the code / short URL already exists in the storage.
 // If the data already exists, it will return ErrDuplicatedShortURL.
 func (ir *InMemoryURLRepository) Save(ctx context.Context, url *entity.URL) *entity.Error {
-	_, exist := ir.data[url.ShortURL]
+	_, exist := ir.data[url.Code]
 	if exist {
 		return entity.ErrDuplicatedShortURL
 	}
 
-	ir.data[url.ShortURL] = url
+	ir.data[url.Code] = url
 	return nil
 }
 
@@ -42,10 +42,10 @@ func (ir *InMemoryURLRepository) GetAll(ctx context.Context) ([]*entity.URL, *en
 	return urls, nil
 }
 
-// GetByShortURL gets a single URLs in storage.
+// GetByCode gets a single URLs in storage.
 // If the URL can't be found, it returns ErrURLNotFound.
-func (ir *InMemoryURLRepository) GetByShortURL(ctx context.Context, shortURL string) (*entity.URL, *entity.Error) {
-	url, found := ir.data[shortURL]
+func (ir *InMemoryURLRepository) GetByCode(ctx context.Context, code string) (*entity.URL, *entity.Error) {
+	url, found := ir.data[code]
 	if !found {
 		return nil, entity.ErrURLNotFound
 	}
