@@ -48,8 +48,6 @@ var (
 			CreatedAt:   testCreatedAt,
 		},
 	}
-
-	// globalsResponses = createGetAllURLReponse(testURLs)
 )
 
 type URLShortenerExecutor struct {
@@ -229,19 +227,6 @@ func TestURLShortener_GetURLDetail(t *testing.T) {
 		assert.Equal(t, testGetURLDetailResponse, resp)
 	})
 }
-
-// func createGetAllURLReponse(urls []*entity.URL) []*shortenerv1.GetAllURLResponse {
-// 	result := []*shortenerv1.GetAllURLResponse{}
-// 	for _, url := range urls {
-// 		tmp := &shortenerv1.GetAllURLResponse{
-// 			ShortUrl:    url.ShortURL,
-// 			OriginalUrl: url.OriginalURL,
-// 			ExpiredAt:   timestamppb.New(url.ExpiredAt),
-// 		}
-// 		result = append(result, tmp)
-// 	}
-// 	return result
-// }
 
 func createURLShortenerExecutor(ctrl *gomock.Controller) *URLShortenerExecutor {
 	c := mock_usecase.NewMockCreateShortURL(ctrl)

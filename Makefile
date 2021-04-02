@@ -67,3 +67,11 @@ docker-run-server:
 .PHONY: docker-run-envoy
 docker-run-envoy:
 	docker run -p 9901:9901 -p 9090:9090 url-shortener-envoy:latest
+
+.PHONY: docker-run-all
+docker-run-all:
+	docker-compose --env-file .env up
+
+.PHONY: docker-down
+docker-down:
+	docker-compose --env-file .env down
