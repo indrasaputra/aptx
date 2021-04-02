@@ -34,13 +34,13 @@ func NewShortURLGenerator(domain string) *ShortURLGenerator {
 	}
 }
 
-// Generate generates a short URL with the given length.
-func (sg *ShortURLGenerator) Generate(length uint) (string, *entity.Error) {
-	str, err := sg.generateRandomString(length)
+// Generate generates a code and a short URL with the given length.
+func (sg *ShortURLGenerator) Generate(length uint) (string, string, *entity.Error) {
+	code, err := sg.generateRandomString(length)
 	if err != nil {
-		return "", entity.WrapError(entity.ErrInternalServer, err.Error())
+		return "", "", entity.WrapError(entity.ErrInternalServer, err.Error())
 	}
-	return fmt.Sprintf("%s/%s", sg.domain, str), nil
+	return code, fmt.Sprintf("%s/%s", sg.domain, code), nil
 }
 
 func (sg *ShortURLGenerator) generateRandomString(length uint) (string, error) {
