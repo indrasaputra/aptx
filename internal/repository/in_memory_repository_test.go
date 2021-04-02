@@ -36,7 +36,7 @@ func TestInMemoryURLRepository_Save(t *testing.T) {
 			err := repo.Save(context.Background(), url)
 
 			assert.NotNil(t, err)
-			assert.Equal(t, entity.ErrDuplicatedShortURL, err)
+			assert.Equal(t, entity.ErrAlreadyExists(), err)
 		}
 	})
 
@@ -79,7 +79,7 @@ func TestInMemoryURLRepository_GetByCode(t *testing.T) {
 		url, err := repo.GetByCode(context.Background(), "http://not-found-short.url")
 
 		assert.NotNil(t, err)
-		assert.Equal(t, entity.ErrURLNotFound, err)
+		assert.Equal(t, entity.ErrNotFound(), err)
 		assert.Nil(t, url)
 	})
 
