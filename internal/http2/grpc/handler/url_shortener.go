@@ -36,19 +36,34 @@ func (us *URLShortener) CreateShortURL(ctx context.Context, request *shortenerv1
 		return nil, cerr
 	}
 
-	return convertURLToCreateShortURLResponse(url), nil
+	return createCreateShortURLResponseFromEntity(url), nil
 }
 
 // GetAllURL handles HTTP/2 gRPC request similar to GET in HTTP/1.1.
 // Its specific job is to get all available URLs in the system.
-func (us *URLShortener) GetAllURL(request *shortenerv1.GetAllURLRequest, stream shortenerv1.URLShortenerService_GetAllURLServer) error {
+func (us *URLShortener) GetAllURL(ctx context.Context, request *shortenerv1.GetAllURLRequest) (*shortenerv1.GetAllURLResponse, error) {
+	if request == nil {
+		return nil, entity.ErrEmptyURL
+	}
+
 	urls, err := us.getter.GetAll(context.Background())
+	if err != nil {
+		return nil, err
+	}
+
+	return createGetAllURLResponseFromEntity(urls), nil
+}
+
+// StreamAllURL handles HTTP/2 gRPC request similar to GET in HTTP/1.1.
+// Its specific job is to get all available URLs in the system using stream.
+func (us *URLShortener) StreamAllURL(request *shortenerv1.StreamAllURLRequest, stream shortenerv1.URLShortenerService_StreamAllURLServer) error {
+	urls, err := us.getter.GetAll(stream.Context())
 	if err != nil {
 		return err
 	}
 
 	for _, url := range urls {
-		resp := convertURLToGetAllURLResponse(url)
+		resp := createStreamAllURLResponseFromEntity(url)
 		if serr := stream.Send(resp); serr != nil {
 			return serr
 		}
@@ -63,32 +78,45 @@ func (us *URLShortener) GetURLDetail(ctx context.Context, request *shortenerv1.G
 		return nil, entity.ErrEmptyURL
 	}
 
-	url, err := us.getter.GetByShortURL(ctx, request.GetShortUrl())
+	url, err := us.getter.GetByCode(ctx, request.GetCode())
 	if err != nil {
 		return nil, err
 	}
-	return convertURLToGetURLDetailResponse(url), nil
+	return createGetURLDetailResponseFromEntity(url), nil
 }
 
-func convertURLToGetAllURLResponse(url *entity.URL) *shortenerv1.GetAllURLResponse {
-	return &shortenerv1.GetAllURLResponse{
-		ShortUrl:    url.ShortURL,
-		OriginalUrl: url.OriginalURL,
-		ExpiredAt:   timestamppb.New(url.ExpiredAt),
-	}
-}
-
-func convertURLToGetURLDetailResponse(url *entity.URL) *shortenerv1.GetURLDetailResponse {
-	return &shortenerv1.GetURLDetailResponse{
-		ShortUrl:    url.ShortURL,
-		OriginalUrl: url.OriginalURL,
-		ExpiredAt:   timestamppb.New(url.ExpiredAt),
-	}
-}
-
-func convertURLToCreateShortURLResponse(url *entity.URL) *shortenerv1.CreateShortURLResponse {
+func createCreateShortURLResponseFromEntity(url *entity.URL) *shortenerv1.CreateShortURLResponse {
 	return &shortenerv1.CreateShortURLResponse{
-		ShortUrl:  url.ShortURL,
-		ExpiredAt: timestamppb.New(url.ExpiredAt),
+		Url: createShortenerV1URL(url),
+	}
+}
+
+func createGetAllURLResponseFromEntity(urls []*entity.URL) *shortenerv1.GetAllURLResponse {
+	res := &shortenerv1.GetAllURLResponse{}
+	for _, url := range urls {
+		res.Urls = append(res.Urls, createShortenerV1URL(url))
+	}
+	return res
+}
+
+func createStreamAllURLResponseFromEntity(url *entity.URL) *shortenerv1.StreamAllURLResponse {
+	return &shortenerv1.StreamAllURLResponse{
+		Url: createShortenerV1URL(url),
+	}
+}
+
+func createGetURLDetailResponseFromEntity(url *entity.URL) *shortenerv1.GetURLDetailResponse {
+	return &shortenerv1.GetURLDetailResponse{
+		Url: createShortenerV1URL(url),
+	}
+}
+
+func createShortenerV1URL(url *entity.URL) *shortenerv1.URL {
+	return &shortenerv1.URL{
+		Code:        url.Code,
+		ShortUrl:    url.ShortURL,
+		OriginalUrl: url.OriginalURL,
+		ExpiredAt:   timestamppb.New(url.ExpiredAt),
+		CreatedAt:   timestamppb.New(url.CreatedAt),
 	}
 }
