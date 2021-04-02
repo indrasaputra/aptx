@@ -1,7 +1,6 @@
 package entity_test
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -9,67 +8,34 @@ import (
 	"github.com/indrasaputra/url-shortener/entity"
 )
 
-const (
-	errorCode                  = "01-001"
-	errorInternalServerMessage = "Internal server error"
-	errorUnauthorizedMessage   = "Unauthorized"
-)
+func TestErrInternal(t *testing.T) {
+	t.Run("success get codes.Internal error", func(t *testing.T) {
+		err := entity.ErrInternal("")
 
-func TestNewError(t *testing.T) {
-	t.Run("successfully create an instance of Error", func(t *testing.T) {
-		err := entity.NewError(errorCode, errorInternalServerMessage)
-
-		assert.NotNil(t, err)
-		assert.Equal(t, errorCode, err.Code)
-		assert.Equal(t, errorInternalServerMessage, err.Message)
-		assert.Equal(t, errorInternalServerMessage, err.Error())
+		assert.Contains(t, err.Error(), "rpc error: code = Internal")
 	})
 }
 
-func TestError_Error(t *testing.T) {
-	t.Run("internal message is derived from public message", func(t *testing.T) {
-		messages := []string{
-			errorInternalServerMessage,
-			errorUnauthorizedMessage,
-		}
+func TestErrEmptyURL(t *testing.T) {
+	t.Run("success get codes.InvalidArgument error", func(t *testing.T) {
+		err := entity.ErrEmptyURL()
 
-		for _, msg := range messages {
-			err := entity.NewError(errorCode, msg)
-			assert.Equal(t, msg, err.Error())
-		}
-	})
-
-	t.Run("internal message is concated from public message and wrapped message", func(t *testing.T) {
-		messages := []string{
-			"wrapped message #1",
-			"wrapped message #2",
-		}
-
-		for _, msg := range messages {
-			err := entity.NewError(errorCode, "public message")
-			err = entity.WrapError(err, msg)
-
-			assert.Equal(t, fmt.Sprintf("public message. %s", msg), err.Error())
-		}
+		assert.Contains(t, err.Error(), "rpc error: code = InvalidArgument")
 	})
 }
 
-func TestWrapError(t *testing.T) {
-	t.Run("new error has the same code and public message as base", func(t *testing.T) {
-		ori := entity.NewError(errorCode, "initial message")
+func TestErrAlreadyExists(t *testing.T) {
+	t.Run("success get codes.AlreadyExists error", func(t *testing.T) {
+		err := entity.ErrAlreadyExists()
 
-		err := entity.WrapError(ori, "additional message #1")
-		assert.Equal(t, ori.Code, err.Code)
-		assert.Equal(t, ori.Message, err.Message)
+		assert.Contains(t, err.Error(), "rpc error: code = AlreadyExists")
 	})
+}
 
-	t.Run("message is wrapped exactly at the end of current message and separated by :", func(t *testing.T) {
-		err := entity.NewError(errorCode, "initial message")
+func TestErrNotFound(t *testing.T) {
+	t.Run("success get codes.NotFound error", func(t *testing.T) {
+		err := entity.ErrNotFound()
 
-		err = entity.WrapError(err, "additional message #1")
-		assert.Equal(t, "initial message. additional message #1", err.Error())
-
-		err = entity.WrapError(err, "additional message #2")
-		assert.Equal(t, "initial message. additional message #1. additional message #2", err.Error())
+		assert.Contains(t, err.Error(), "rpc error: code = NotFound")
 	})
 }
