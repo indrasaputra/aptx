@@ -28,7 +28,7 @@ func NewURLShortener(creator usecase.CreateShortURL, getter usecase.GetURL) *URL
 // CreateShortURL handles HTTP/2 gRPC request similar to POST in HTTP/1.1.
 func (us *URLShortener) CreateShortURL(ctx context.Context, request *shortenerv1.CreateShortURLRequest) (*shortenerv1.CreateShortURLResponse, error) {
 	if request == nil {
-		return nil, entity.ErrEmptyURL
+		return nil, entity.ErrEmptyURL()
 	}
 
 	url, cerr := us.creator.Create(ctx, request.GetOriginalUrl())
@@ -43,7 +43,7 @@ func (us *URLShortener) CreateShortURL(ctx context.Context, request *shortenerv1
 // Its specific job is to get all available URLs in the system.
 func (us *URLShortener) GetAllURL(ctx context.Context, request *shortenerv1.GetAllURLRequest) (*shortenerv1.GetAllURLResponse, error) {
 	if request == nil {
-		return nil, entity.ErrEmptyURL
+		return nil, entity.ErrEmptyURL()
 	}
 
 	urls, err := us.getter.GetAll(context.Background())
@@ -65,7 +65,7 @@ func (us *URLShortener) StreamAllURL(request *shortenerv1.StreamAllURLRequest, s
 	for _, url := range urls {
 		resp := createStreamAllURLResponseFromEntity(url)
 		if serr := stream.Send(resp); serr != nil {
-			return serr
+			return entity.ErrInternal(serr.Error())
 		}
 	}
 	return nil
@@ -75,7 +75,7 @@ func (us *URLShortener) StreamAllURL(request *shortenerv1.StreamAllURLRequest, s
 // Its specific job is to get a detail of a single short URL.
 func (us *URLShortener) GetURLDetail(ctx context.Context, request *shortenerv1.GetURLDetailRequest) (*shortenerv1.GetURLDetailResponse, error) {
 	if request == nil {
-		return nil, entity.ErrEmptyURL
+		return nil, entity.ErrEmptyURL()
 	}
 
 	url, err := us.getter.GetByCode(ctx, request.GetCode())

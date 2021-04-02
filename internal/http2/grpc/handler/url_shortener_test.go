@@ -18,13 +18,14 @@ import (
 )
 
 var (
-	testExpiredAt      = time.Now().Add(10 * time.Minute)
-	testCreatedAt      = time.Now()
-	testContext        = context.Background()
-	testCode           = "ABCdef12"
-	testShortURL       = "http://short.url/ABCdef12"
-	testOriginalURL    = "http://very-long-original.url"
-	testShortenerV1URL = &shortenerv1.URL{
+	testErrInternalMessage = "unexpected command"
+	testExpiredAt          = time.Now().Add(10 * time.Minute)
+	testCreatedAt          = time.Now()
+	testContext            = context.Background()
+	testCode               = "ABCdef12"
+	testShortURL           = "http://short.url/ABCdef12"
+	testOriginalURL        = "http://very-long-original.url"
+	testShortenerV1URL     = &shortenerv1.URL{
 		Code:        testCode,
 		ShortUrl:    testShortURL,
 		OriginalUrl: testOriginalURL,
@@ -76,18 +77,18 @@ func TestURLShortener_CreateShortURL(t *testing.T) {
 		resp, err := exec.handler.CreateShortURL(testContext, nil)
 
 		assert.NotNil(t, err)
-		assert.Equal(t, entity.ErrEmptyURL, err)
+		assert.Equal(t, entity.ErrEmptyURL(), err)
 		assert.Nil(t, resp)
 	})
 
 	t.Run("creator usecase returns error", func(t *testing.T) {
 		exec := createURLShortenerExecutor(ctrl)
-		exec.creator.EXPECT().Create(testContext, testCreateShortURLRequest.GetOriginalUrl()).Return(nil, entity.ErrInternalServer)
+		exec.creator.EXPECT().Create(testContext, testCreateShortURLRequest.GetOriginalUrl()).Return(nil, entity.ErrInternal(testErrInternalMessage))
 
 		resp, err := exec.handler.CreateShortURL(testContext, testCreateShortURLRequest)
 
 		assert.NotNil(t, err)
-		assert.Equal(t, entity.ErrInternalServer, err)
+		assert.Equal(t, entity.ErrInternal(testErrInternalMessage), err)
 		assert.Nil(t, resp)
 	})
 
@@ -113,13 +114,13 @@ func TestURLShortener_GetAllURL(t *testing.T) {
 		resp, err := exec.handler.GetAllURL(testContext, nil)
 
 		assert.NotNil(t, err)
-		assert.Equal(t, entity.ErrEmptyURL, err)
+		assert.Equal(t, entity.ErrEmptyURL(), err)
 		assert.Nil(t, resp)
 	})
 
 	t.Run("getter usecase returns error", func(t *testing.T) {
 		exec := createURLShortenerExecutor(ctrl)
-		exec.getter.EXPECT().GetAll(testContext).Return([]*entity.URL{}, entity.ErrInternalServer)
+		exec.getter.EXPECT().GetAll(testContext).Return([]*entity.URL{}, entity.ErrInternal(testErrInternalMessage))
 
 		resp, err := exec.handler.GetAllURL(testContext, testGetAllURLRequest)
 
@@ -148,7 +149,7 @@ func TestURLShortener_StreamAllURL(t *testing.T) {
 		exec := createURLShortenerExecutor(ctrl)
 		stream := mock_grpc.NewMockURLShortenerService_StreamAllURLServer(ctrl)
 		stream.EXPECT().Context().Return(testContext)
-		exec.getter.EXPECT().GetAll(testContext).Return([]*entity.URL{}, entity.ErrInternalServer)
+		exec.getter.EXPECT().GetAll(testContext).Return([]*entity.URL{}, entity.ErrInternal(testErrInternalMessage))
 
 		err := exec.handler.StreamAllURL(testStreamAllURLRequest, stream)
 
@@ -190,29 +191,29 @@ func TestURLShortener_GetURLDetail(t *testing.T) {
 		resp, err := exec.handler.GetURLDetail(testContext, nil)
 
 		assert.NotNil(t, err)
-		assert.Equal(t, entity.ErrEmptyURL, err)
+		assert.Equal(t, entity.ErrEmptyURL(), err)
 		assert.Nil(t, resp)
 	})
 
 	t.Run("getter usecase returns error", func(t *testing.T) {
 		exec := createURLShortenerExecutor(ctrl)
-		exec.getter.EXPECT().GetByCode(testContext, testGetURLDetailRequest.GetCode()).Return(nil, entity.ErrInternalServer)
+		exec.getter.EXPECT().GetByCode(testContext, testGetURLDetailRequest.GetCode()).Return(nil, entity.ErrInternal(testErrInternalMessage))
 
 		resp, err := exec.handler.GetURLDetail(testContext, testGetURLDetailRequest)
 
 		assert.NotNil(t, err)
-		assert.Equal(t, entity.ErrInternalServer, err)
+		assert.Equal(t, entity.ErrInternal(testErrInternalMessage), err)
 		assert.Nil(t, resp)
 	})
 
 	t.Run("url can't be found", func(t *testing.T) {
 		exec := createURLShortenerExecutor(ctrl)
-		exec.getter.EXPECT().GetByCode(testContext, testGetURLDetailRequest.GetCode()).Return(nil, entity.ErrURLNotFound)
+		exec.getter.EXPECT().GetByCode(testContext, testGetURLDetailRequest.GetCode()).Return(nil, entity.ErrNotFound())
 
 		resp, err := exec.handler.GetURLDetail(testContext, testGetURLDetailRequest)
 
 		assert.NotNil(t, err)
-		assert.Equal(t, entity.ErrURLNotFound, err)
+		assert.Equal(t, entity.ErrNotFound(), err)
 		assert.Nil(t, resp)
 	})
 
