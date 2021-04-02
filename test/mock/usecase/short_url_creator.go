@@ -75,12 +75,13 @@ func (m *MockURLGenerator) EXPECT() *MockURLGeneratorMockRecorder {
 }
 
 // Generate mocks base method
-func (m *MockURLGenerator) Generate(length uint) (string, *entity.Error) {
+func (m *MockURLGenerator) Generate(length uint) (string, string, *entity.Error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Generate", length)
 	ret0, _ := ret[0].(string)
-	ret1, _ := ret[1].(*entity.Error)
-	return ret0, ret1
+	ret1, _ := ret[1].(string)
+	ret2, _ := ret[2].(*entity.Error)
+	return ret0, ret1, ret2
 }
 
 // Generate indicates an expected call of Generate
