@@ -13,6 +13,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
+	grpchealthv1 "google.golang.org/grpc/health/grpc_health_v1"
 
 	"github.com/indrasaputra/url-shortener/internal/builder"
 	"github.com/indrasaputra/url-shortener/internal/config"
@@ -25,9 +26,10 @@ func main() {
 	checkError(err)
 
 	shortenerHandler := builder.BuildGRPCURLShortener(cfg.Domain)
+	healthCheckerHandler := builder.BuildGRPCHealthChecker()
 
 	grpcServer := createGRPCServer()
-	registerGRPCServer(grpcServer, shortenerHandler)
+	registerGRPCServer(grpcServer, shortenerHandler, healthCheckerHandler)
 	runGRPCServer(grpcServer, cfg)
 
 	restServer := createRestServer(cfg)
@@ -51,11 +53,12 @@ func createGRPCServer() *grpc.Server {
 	return server
 }
 
-func registerGRPCServer(server *grpc.Server, shortenerHandler *handler.URLShortener) {
+func registerGRPCServer(server *grpc.Server, shortenerHandler *handler.URLShortener, healthCheckerHandler *handler.HealthChecker) {
 	grpc_prometheus.EnableHandlingTimeHistogram()
 	grpc_prometheus.Register(server)
 
 	shortenerv1.RegisterURLShortenerServiceServer(server, shortenerHandler)
+	grpchealthv1.RegisterHealthServer(server, healthCheckerHandler)
 }
 
 func runGRPCServer(server *grpc.Server, cfg *config.Config) {
