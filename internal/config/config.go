@@ -8,8 +8,9 @@ import (
 
 // Config holds configuration for the project.
 type Config struct {
-	Port   string `env:"PORT,default=8080"`
-	Domain string `env:"DOMAIN,required"`
+	PortHTTP string `env:"PORT_HTTP,default=8081"`
+	PortGRPC string `env:"PORT_GRPC,default=8080"`
+	Domain   string `env:"DOMAIN,required"`
 }
 
 // NewConfig creates an instance of Config.
