@@ -1,7 +1,6 @@
 package usecase_test
 
 import (
-	"context"
 	"testing"
 	"time"
 
@@ -46,9 +45,9 @@ func TestURLGetter_GetAll(t *testing.T) {
 
 	t.Run("repository returns error", func(t *testing.T) {
 		exec := createURLGetterExecutor(ctrl)
-		exec.repo.EXPECT().GetAll(context.Background()).Return([]*entity.URL{}, entity.ErrInternal(testErrInternalMessage))
+		exec.repo.EXPECT().GetAll(testContext).Return([]*entity.URL{}, entity.ErrInternal(testErrInternalMessage))
 
-		urls, err := exec.usecase.GetAll(context.Background())
+		urls, err := exec.usecase.GetAll(testContext)
 
 		assert.NotNil(t, err)
 		assert.Equal(t, entity.ErrInternal(testErrInternalMessage), err)
@@ -57,9 +56,9 @@ func TestURLGetter_GetAll(t *testing.T) {
 
 	t.Run("success get all urls", func(t *testing.T) {
 		exec := createURLGetterExecutor(ctrl)
-		exec.repo.EXPECT().GetAll(context.Background()).Return(testURLs, nil)
+		exec.repo.EXPECT().GetAll(testContext).Return(testURLs, nil)
 
-		urls, err := exec.usecase.GetAll(context.Background())
+		urls, err := exec.usecase.GetAll(testContext)
 
 		assert.Nil(t, err)
 		assert.Equal(t, testURLs, urls)
@@ -72,9 +71,9 @@ func TestURLGetter_GetByCode(t *testing.T) {
 
 	t.Run("repository returns error", func(t *testing.T) {
 		exec := createURLGetterExecutor(ctrl)
-		exec.repo.EXPECT().GetByCode(context.Background(), testURLCode).Return(&entity.URL{}, entity.ErrInternal(testErrInternalMessage))
+		exec.repo.EXPECT().GetByCode(testContext, testURLCode).Return(&entity.URL{}, entity.ErrInternal(testErrInternalMessage))
 
-		urls, err := exec.usecase.GetByCode(context.Background(), testURLCode)
+		urls, err := exec.usecase.GetByCode(testContext, testURLCode)
 
 		assert.NotNil(t, err)
 		assert.Equal(t, entity.ErrInternal(testErrInternalMessage), err)
@@ -83,9 +82,9 @@ func TestURLGetter_GetByCode(t *testing.T) {
 
 	t.Run("url can't be found", func(t *testing.T) {
 		exec := createURLGetterExecutor(ctrl)
-		exec.repo.EXPECT().GetByCode(context.Background(), testURLCode).Return(&entity.URL{}, entity.ErrNotFound())
+		exec.repo.EXPECT().GetByCode(testContext, testURLCode).Return(&entity.URL{}, entity.ErrNotFound())
 
-		urls, err := exec.usecase.GetByCode(context.Background(), testURLCode)
+		urls, err := exec.usecase.GetByCode(testContext, testURLCode)
 
 		assert.NotNil(t, err)
 		assert.Equal(t, entity.ErrNotFound(), err)
@@ -94,9 +93,9 @@ func TestURLGetter_GetByCode(t *testing.T) {
 
 	t.Run("success get single url", func(t *testing.T) {
 		exec := createURLGetterExecutor(ctrl)
-		exec.repo.EXPECT().GetByCode(context.Background(), testURLCode).Return(testURLs[0], nil)
+		exec.repo.EXPECT().GetByCode(testContext, testURLCode).Return(testURLs[0], nil)
 
-		urls, err := exec.usecase.GetByCode(context.Background(), testURLCode)
+		urls, err := exec.usecase.GetByCode(testContext, testURLCode)
 
 		assert.Nil(t, err)
 		assert.Equal(t, testURLs[0], urls)
