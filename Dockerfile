@@ -5,6 +5,6 @@ RUN make compile-server
 
 FROM alpine:3.13
 WORKDIR /app
-COPY --from=builder /app/url-shortener .
+COPY --from=builder /app/url-shortener-server .
 EXPOSE 8080
-CMD ["/app/url-shortener"]
+CMD ["/app/url-shortener-server"]
