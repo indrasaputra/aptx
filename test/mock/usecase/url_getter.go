@@ -51,19 +51,19 @@ func (mr *MockGetURLMockRecorder) GetAll(ctx interface{}) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAll", reflect.TypeOf((*MockGetURL)(nil).GetAll), ctx)
 }
 
-// GetByShortURL mocks base method
-func (m *MockGetURL) GetByShortURL(ctx context.Context, shortURL string) (*entity.URL, *entity.Error) {
+// GetByCode mocks base method
+func (m *MockGetURL) GetByCode(ctx context.Context, code string) (*entity.URL, *entity.Error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetByShortURL", ctx, shortURL)
+	ret := m.ctrl.Call(m, "GetByCode", ctx, code)
 	ret0, _ := ret[0].(*entity.URL)
 	ret1, _ := ret[1].(*entity.Error)
 	return ret0, ret1
 }
 
-// GetByShortURL indicates an expected call of GetByShortURL
-func (mr *MockGetURLMockRecorder) GetByShortURL(ctx, shortURL interface{}) *gomock.Call {
+// GetByCode indicates an expected call of GetByCode
+func (mr *MockGetURLMockRecorder) GetByCode(ctx, code interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByShortURL", reflect.TypeOf((*MockGetURL)(nil).GetByShortURL), ctx, shortURL)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByCode", reflect.TypeOf((*MockGetURL)(nil).GetByCode), ctx, code)
 }
 
 // MockGetURLRepository is a mock of GetURLRepository interface
@@ -104,17 +104,17 @@ func (mr *MockGetURLRepositoryMockRecorder) GetAll(ctx interface{}) *gomock.Call
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAll", reflect.TypeOf((*MockGetURLRepository)(nil).GetAll), ctx)
 }
 
-// GetByShortURL mocks base method
-func (m *MockGetURLRepository) GetByShortURL(ctx context.Context, shortURL string) (*entity.URL, *entity.Error) {
+// GetByCode mocks base method
+func (m *MockGetURLRepository) GetByCode(ctx context.Context, code string) (*entity.URL, *entity.Error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetByShortURL", ctx, shortURL)
+	ret := m.ctrl.Call(m, "GetByCode", ctx, code)
 	ret0, _ := ret[0].(*entity.URL)
 	ret1, _ := ret[1].(*entity.Error)
 	return ret0, ret1
 }
 
-// GetByShortURL indicates an expected call of GetByShortURL
-func (mr *MockGetURLRepositoryMockRecorder) GetByShortURL(ctx, shortURL interface{}) *gomock.Call {
+// GetByCode indicates an expected call of GetByCode
+func (mr *MockGetURLRepositoryMockRecorder) GetByCode(ctx, code interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByShortURL", reflect.TypeOf((*MockGetURLRepository)(nil).GetByShortURL), ctx, shortURL)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByCode", reflect.TypeOf((*MockGetURLRepository)(nil).GetByCode), ctx, code)
 }

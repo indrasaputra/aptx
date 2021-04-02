@@ -14,21 +14,13 @@ import (
 )
 
 var (
-	globalURLs = []*entity.URL{
+	testURLs = []*entity.URL{
 		{
-			ShortURL:    "http://short-1.url",
-			OriginalURL: "http://original-1.url",
+			Code:        testURLCode,
+			ShortURL:    testURLShort,
+			OriginalURL: testURLOriginal,
 			ExpiredAt:   time.Now().Add(1 * time.Minute),
-		},
-		{
-			ShortURL:    "http://short-2.url",
-			OriginalURL: "http://original-2.url",
-			ExpiredAt:   time.Now().Add(2 * time.Minute),
-		},
-		{
-			ShortURL:    "http://short-3.url",
-			OriginalURL: "http://original-3.url",
-			ExpiredAt:   time.Now().Add(2 * time.Minute),
+			CreatedAt:   time.Now(),
 		},
 	}
 )
@@ -65,26 +57,24 @@ func TestURLGetter_GetAll(t *testing.T) {
 
 	t.Run("success get all urls", func(t *testing.T) {
 		exec := createURLGetterExecutor(ctrl)
-		exec.repo.EXPECT().GetAll(context.Background()).Return(globalURLs, nil)
+		exec.repo.EXPECT().GetAll(context.Background()).Return(testURLs, nil)
 
 		urls, err := exec.usecase.GetAll(context.Background())
 
 		assert.Nil(t, err)
-		assert.Equal(t, globalURLs, urls)
+		assert.Equal(t, testURLs, urls)
 	})
 }
 
-func TestURLGetter_GetByShortURL(t *testing.T) {
+func TestURLGetter_GetByCode(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	shortURL := "http://short-1.url"
-
 	t.Run("repository returns error", func(t *testing.T) {
 		exec := createURLGetterExecutor(ctrl)
-		exec.repo.EXPECT().GetByShortURL(context.Background(), shortURL).Return(&entity.URL{}, entity.ErrInternalServer)
+		exec.repo.EXPECT().GetByCode(context.Background(), testURLCode).Return(&entity.URL{}, entity.ErrInternalServer)
 
-		urls, err := exec.usecase.GetByShortURL(context.Background(), shortURL)
+		urls, err := exec.usecase.GetByCode(context.Background(), testURLCode)
 
 		assert.NotNil(t, err)
 		assert.Equal(t, entity.ErrInternalServer, err)
@@ -93,9 +83,9 @@ func TestURLGetter_GetByShortURL(t *testing.T) {
 
 	t.Run("url can't be found", func(t *testing.T) {
 		exec := createURLGetterExecutor(ctrl)
-		exec.repo.EXPECT().GetByShortURL(context.Background(), shortURL).Return(&entity.URL{}, entity.ErrURLNotFound)
+		exec.repo.EXPECT().GetByCode(context.Background(), testURLCode).Return(&entity.URL{}, entity.ErrURLNotFound)
 
-		urls, err := exec.usecase.GetByShortURL(context.Background(), shortURL)
+		urls, err := exec.usecase.GetByCode(context.Background(), testURLCode)
 
 		assert.NotNil(t, err)
 		assert.Equal(t, entity.ErrURLNotFound, err)
@@ -104,12 +94,12 @@ func TestURLGetter_GetByShortURL(t *testing.T) {
 
 	t.Run("success get single url", func(t *testing.T) {
 		exec := createURLGetterExecutor(ctrl)
-		exec.repo.EXPECT().GetByShortURL(context.Background(), shortURL).Return(globalURLs[0], nil)
+		exec.repo.EXPECT().GetByCode(context.Background(), testURLCode).Return(testURLs[0], nil)
 
-		urls, err := exec.usecase.GetByShortURL(context.Background(), shortURL)
+		urls, err := exec.usecase.GetByCode(context.Background(), testURLCode)
 
 		assert.Nil(t, err)
-		assert.Equal(t, globalURLs[0], urls)
+		assert.Equal(t, testURLs[0], urls)
 	})
 }
 
