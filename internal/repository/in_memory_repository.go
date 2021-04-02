@@ -51,3 +51,8 @@ func (ir *InMemoryURLRepository) GetByCode(ctx context.Context, code string) (*e
 	}
 	return url, nil
 }
+
+// IsAlive always returns true since the HashMap is always alive inside the system.
+func (ir *InMemoryURLRepository) IsAlive(_ context.Context) bool {
+	return true
+}
