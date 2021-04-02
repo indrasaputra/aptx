@@ -25,15 +25,16 @@ func TestShortURLGenerator_Generate(t *testing.T) {
 			// on 10 iterations, the likeliness to produce non-unique string is quite small.
 			// if it happenened, then we just got a badluck :P
 			for i := 0; i < 10; i++ {
-				short, err := gen.Generate(7)
+				code, short, err := gen.Generate(7)
 				assert.Nil(t, err)
 
-				_, exist := result[short]
-				result[short] = true
+				_, exist := result[code]
+				result[code] = true
 				assert.False(t, exist)
 
 				assert.Contains(t, short, "http://localhost/")
 				assert.Equal(t, len("http://localhost/1234567"), len(short))
+				assert.Equal(t, 7, len(code))
 			}
 		}
 	})
