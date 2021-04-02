@@ -38,7 +38,7 @@ func NewShortURLGenerator(domain string) *ShortURLGenerator {
 func (sg *ShortURLGenerator) Generate(length uint) (string, string, error) {
 	code, err := sg.generateRandomString(length)
 	if err != nil {
-		return "", "", entity.WrapError(entity.ErrInternalServer, err.Error())
+		return "", "", entity.ErrInternal(err.Error())
 	}
 	return code, fmt.Sprintf("%s/%s", sg.domain, code), nil
 }
