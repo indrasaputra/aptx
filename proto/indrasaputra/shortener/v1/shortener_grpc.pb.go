@@ -20,7 +20,8 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type URLShortenerServiceClient interface {
 	CreateShortURL(ctx context.Context, in *CreateShortURLRequest, opts ...grpc.CallOption) (*CreateShortURLResponse, error)
-	GetAllURL(ctx context.Context, in *GetAllURLRequest, opts ...grpc.CallOption) (URLShortenerService_GetAllURLClient, error)
+	GetAllURL(ctx context.Context, in *GetAllURLRequest, opts ...grpc.CallOption) (*GetAllURLResponse, error)
+	StreamAllURL(ctx context.Context, in *StreamAllURLRequest, opts ...grpc.CallOption) (URLShortenerService_StreamAllURLClient, error)
 	GetURLDetail(ctx context.Context, in *GetURLDetailRequest, opts ...grpc.CallOption) (*GetURLDetailResponse, error)
 }
 
@@ -41,12 +42,21 @@ func (c *uRLShortenerServiceClient) CreateShortURL(ctx context.Context, in *Crea
 	return out, nil
 }
 
-func (c *uRLShortenerServiceClient) GetAllURL(ctx context.Context, in *GetAllURLRequest, opts ...grpc.CallOption) (URLShortenerService_GetAllURLClient, error) {
-	stream, err := c.cc.NewStream(ctx, &URLShortenerService_ServiceDesc.Streams[0], "/proto.indrasaputra.shortener.v1.URLShortenerService/GetAllURL", opts...)
+func (c *uRLShortenerServiceClient) GetAllURL(ctx context.Context, in *GetAllURLRequest, opts ...grpc.CallOption) (*GetAllURLResponse, error) {
+	out := new(GetAllURLResponse)
+	err := c.cc.Invoke(ctx, "/proto.indrasaputra.shortener.v1.URLShortenerService/GetAllURL", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
-	x := &uRLShortenerServiceGetAllURLClient{stream}
+	return out, nil
+}
+
+func (c *uRLShortenerServiceClient) StreamAllURL(ctx context.Context, in *StreamAllURLRequest, opts ...grpc.CallOption) (URLShortenerService_StreamAllURLClient, error) {
+	stream, err := c.cc.NewStream(ctx, &URLShortenerService_ServiceDesc.Streams[0], "/proto.indrasaputra.shortener.v1.URLShortenerService/StreamAllURL", opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &uRLShortenerServiceStreamAllURLClient{stream}
 	if err := x.ClientStream.SendMsg(in); err != nil {
 		return nil, err
 	}
@@ -56,17 +66,17 @@ func (c *uRLShortenerServiceClient) GetAllURL(ctx context.Context, in *GetAllURL
 	return x, nil
 }
 
-type URLShortenerService_GetAllURLClient interface {
-	Recv() (*GetAllURLResponse, error)
+type URLShortenerService_StreamAllURLClient interface {
+	Recv() (*StreamAllURLResponse, error)
 	grpc.ClientStream
 }
 
-type uRLShortenerServiceGetAllURLClient struct {
+type uRLShortenerServiceStreamAllURLClient struct {
 	grpc.ClientStream
 }
 
-func (x *uRLShortenerServiceGetAllURLClient) Recv() (*GetAllURLResponse, error) {
-	m := new(GetAllURLResponse)
+func (x *uRLShortenerServiceStreamAllURLClient) Recv() (*StreamAllURLResponse, error) {
+	m := new(StreamAllURLResponse)
 	if err := x.ClientStream.RecvMsg(m); err != nil {
 		return nil, err
 	}
@@ -87,7 +97,8 @@ func (c *uRLShortenerServiceClient) GetURLDetail(ctx context.Context, in *GetURL
 // for forward compatibility
 type URLShortenerServiceServer interface {
 	CreateShortURL(context.Context, *CreateShortURLRequest) (*CreateShortURLResponse, error)
-	GetAllURL(*GetAllURLRequest, URLShortenerService_GetAllURLServer) error
+	GetAllURL(context.Context, *GetAllURLRequest) (*GetAllURLResponse, error)
+	StreamAllURL(*StreamAllURLRequest, URLShortenerService_StreamAllURLServer) error
 	GetURLDetail(context.Context, *GetURLDetailRequest) (*GetURLDetailResponse, error)
 	mustEmbedUnimplementedURLShortenerServiceServer()
 }
@@ -99,8 +110,11 @@ type UnimplementedURLShortenerServiceServer struct {
 func (UnimplementedURLShortenerServiceServer) CreateShortURL(context.Context, *CreateShortURLRequest) (*CreateShortURLResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateShortURL not implemented")
 }
-func (UnimplementedURLShortenerServiceServer) GetAllURL(*GetAllURLRequest, URLShortenerService_GetAllURLServer) error {
-	return status.Errorf(codes.Unimplemented, "method GetAllURL not implemented")
+func (UnimplementedURLShortenerServiceServer) GetAllURL(context.Context, *GetAllURLRequest) (*GetAllURLResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetAllURL not implemented")
+}
+func (UnimplementedURLShortenerServiceServer) StreamAllURL(*StreamAllURLRequest, URLShortenerService_StreamAllURLServer) error {
+	return status.Errorf(codes.Unimplemented, "method StreamAllURL not implemented")
 }
 func (UnimplementedURLShortenerServiceServer) GetURLDetail(context.Context, *GetURLDetailRequest) (*GetURLDetailResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetURLDetail not implemented")
@@ -136,24 +150,42 @@ func _URLShortenerService_CreateShortURL_Handler(srv interface{}, ctx context.Co
 	return interceptor(ctx, in, info, handler)
 }
 
-func _URLShortenerService_GetAllURL_Handler(srv interface{}, stream grpc.ServerStream) error {
-	m := new(GetAllURLRequest)
+func _URLShortenerService_GetAllURL_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetAllURLRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(URLShortenerServiceServer).GetAllURL(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/proto.indrasaputra.shortener.v1.URLShortenerService/GetAllURL",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(URLShortenerServiceServer).GetAllURL(ctx, req.(*GetAllURLRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _URLShortenerService_StreamAllURL_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(StreamAllURLRequest)
 	if err := stream.RecvMsg(m); err != nil {
 		return err
 	}
-	return srv.(URLShortenerServiceServer).GetAllURL(m, &uRLShortenerServiceGetAllURLServer{stream})
+	return srv.(URLShortenerServiceServer).StreamAllURL(m, &uRLShortenerServiceStreamAllURLServer{stream})
 }
 
-type URLShortenerService_GetAllURLServer interface {
-	Send(*GetAllURLResponse) error
+type URLShortenerService_StreamAllURLServer interface {
+	Send(*StreamAllURLResponse) error
 	grpc.ServerStream
 }
 
-type uRLShortenerServiceGetAllURLServer struct {
+type uRLShortenerServiceStreamAllURLServer struct {
 	grpc.ServerStream
 }
 
-func (x *uRLShortenerServiceGetAllURLServer) Send(m *GetAllURLResponse) error {
+func (x *uRLShortenerServiceStreamAllURLServer) Send(m *StreamAllURLResponse) error {
 	return x.ServerStream.SendMsg(m)
 }
 
@@ -187,14 +219,18 @@ var URLShortenerService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _URLShortenerService_CreateShortURL_Handler,
 		},
 		{
+			MethodName: "GetAllURL",
+			Handler:    _URLShortenerService_GetAllURL_Handler,
+		},
+		{
 			MethodName: "GetURLDetail",
 			Handler:    _URLShortenerService_GetURLDetail_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{
 		{
-			StreamName:    "GetAllURL",
-			Handler:       _URLShortenerService_GetAllURL_Handler,
+			StreamName:    "StreamAllURL",
+			Handler:       _URLShortenerService_StreamAllURL_Handler,
 			ServerStreams: true,
 		},
 	},
