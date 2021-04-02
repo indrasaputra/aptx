@@ -10,7 +10,7 @@ import (
 	"github.com/indrasaputra/url-shortener/usecase"
 )
 
-// URLShortener handles HTTP/2 gRPC request for URL shortener .
+// URLShortener handles HTTP/2 gRPC request for URL shortener.
 type URLShortener struct {
 	shortenerv1.UnimplementedURLShortenerServiceServer
 	creator usecase.CreateShortURL
