@@ -11,6 +11,12 @@ import (
 	"github.com/indrasaputra/url-shortener/usecase"
 )
 
+var (
+	testURLCode     = "AbCdE12"
+	testURLShort    = "http://localhost/" + testURLCode
+	testURLOriginal = "http://very-long-url.url"
+)
+
 type ShortURLCreatorExecutor struct {
 	usecase   *usecase.ShortURLCreator
 	generator *mock_usecase.MockURLGeneratorV2
@@ -40,12 +46,10 @@ func TestShortURLCreator_Create(t *testing.T) {
 
 	t.Run("generator always returns error", func(t *testing.T) {
 		exec := createShortURLCreatorExecutor()
-		original := "http://orignal-1.url"
-		short := "http://short-1.url"
 
-		exec.generator.SetReturnValues(short, entity.ErrInternalServer)
+		exec.generator.SetReturnValues("", "", entity.ErrInternalServer)
 
-		res, err := exec.usecase.Create(context.Background(), original)
+		res, err := exec.usecase.Create(context.Background(), testURLOriginal)
 
 		assert.NotNil(t, err)
 		assert.Equal(t, entity.ErrInternalServer, err)
@@ -54,13 +58,11 @@ func TestShortURLCreator_Create(t *testing.T) {
 
 	t.Run("short url is not unique", func(t *testing.T) {
 		exec := createShortURLCreatorExecutor()
-		original := "http://orignal-2.url"
-		short := "http://short-2.url"
 
-		exec.generator.SetReturnValues(short, nil)
+		exec.generator.SetReturnValues(testURLCode, testURLShort, nil)
 		exec.repo.SetReturnValues(entity.ErrInternalServer)
 
-		res, err := exec.usecase.Create(context.Background(), original)
+		res, err := exec.usecase.Create(context.Background(), testURLOriginal)
 
 		assert.NotNil(t, err)
 		assert.Nil(t, res)
@@ -68,13 +70,11 @@ func TestShortURLCreator_Create(t *testing.T) {
 
 	t.Run("successfully create a short url", func(t *testing.T) {
 		exec := createShortURLCreatorExecutor()
-		original := "http://orignal-3.url"
-		short := "http://short-3.url"
 
-		exec.generator.SetReturnValues(short, nil)
+		exec.generator.SetReturnValues(testURLCode, testURLShort, nil)
 		exec.repo.SetReturnValues(nil)
 
-		res, err := exec.usecase.Create(context.Background(), original)
+		res, err := exec.usecase.Create(context.Background(), testURLOriginal)
 
 		assert.Nil(t, err)
 		assert.NotNil(t, res)

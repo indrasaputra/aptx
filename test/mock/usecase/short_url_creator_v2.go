@@ -8,8 +8,9 @@ import (
 
 // MockURLGeneratorV2 is a mock of URLGenerator interface
 type MockURLGeneratorV2 struct {
-	value string
-	err   *entity.Error
+	code string
+	url  string
+	err  *entity.Error
 }
 
 func NewMockURLGeneratorV2() *MockURLGeneratorV2 {
@@ -17,14 +18,15 @@ func NewMockURLGeneratorV2() *MockURLGeneratorV2 {
 }
 
 // SetReturnValues sets return values.
-func (m *MockURLGeneratorV2) SetReturnValues(value string, err *entity.Error) {
-	m.value = value
+func (m *MockURLGeneratorV2) SetReturnValues(code, url string, err *entity.Error) {
+	m.code = code
+	m.url = url
 	m.err = err
 }
 
 // Generate mocks base method
-func (m *MockURLGeneratorV2) Generate(_ uint) (string, *entity.Error) {
-	return m.value, m.err
+func (m *MockURLGeneratorV2) Generate(_ uint) (string, string, *entity.Error) {
+	return m.code, m.url, m.err
 }
 
 // MockCreateShortURLRepositoryV2 is a mock of CreateShortURLRepository interface
