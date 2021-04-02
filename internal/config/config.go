@@ -16,7 +16,7 @@ type Config struct {
 // NewConfig creates an instance of Config.
 // It needs the path of the env file to be used.
 func NewConfig(env string) (*Config, error) {
-	godotenv.Load(env)
+	_ = godotenv.Load(env)
 
 	var config Config
 	if err := envdecode.Decode(&config); err != nil {
