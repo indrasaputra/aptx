@@ -14,3 +14,10 @@ func TestBuildGRPCURLShortener(t *testing.T) {
 		assert.NotNil(t, hdr)
 	})
 }
+
+func TestBuildGRPCHealthChecker(t *testing.T) {
+	t.Run("successfully create HealthChecker handler", func(t *testing.T) {
+		hdr := builder.BuildGRPCHealthChecker()
+		assert.NotNil(t, hdr)
+	})
+}
