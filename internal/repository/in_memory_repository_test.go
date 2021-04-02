@@ -13,7 +13,8 @@ import (
 )
 
 var (
-	testCodes = []string{"ABCdef12", "xyzJKL34", "asdQWE56"}
+	testContext = context.Background()
+	testCodes   = []string{"ABCdef12", "xyzJKL34", "asdQWE56"}
 )
 
 func TestNewInMemoryURLRepository(t *testing.T) {
@@ -28,12 +29,12 @@ func TestInMemoryURLRepository_Save(t *testing.T) {
 		repo := repository.NewInMemoryURLRepository()
 		for i, code := range testCodes {
 			url := createURL(fmt.Sprintf("http://original-%d.url", i), code)
-			_ = repo.Save(context.Background(), url)
+			_ = repo.Save(testContext, url)
 		}
 
 		for i, code := range testCodes {
 			url := createURL(fmt.Sprintf("http://original-%d-%d.url", i, i), code)
-			err := repo.Save(context.Background(), url)
+			err := repo.Save(testContext, url)
 
 			assert.NotNil(t, err)
 			assert.Equal(t, entity.ErrAlreadyExists(), err)
@@ -44,7 +45,7 @@ func TestInMemoryURLRepository_Save(t *testing.T) {
 		repo := repository.NewInMemoryURLRepository()
 		for i, code := range testCodes {
 			url := createURL(fmt.Sprintf("http://original-%d.url", i), code)
-			err := repo.Save(context.Background(), url)
+			err := repo.Save(testContext, url)
 			assert.Nil(t, err)
 		}
 	})
@@ -54,7 +55,7 @@ func TestInMemoryURLRepository_GetAll(t *testing.T) {
 	t.Run("empty data returns empty list and nil error", func(t *testing.T) {
 		repo := repository.NewInMemoryURLRepository()
 
-		urls, err := repo.GetAll(context.Background())
+		urls, err := repo.GetAll(testContext)
 
 		assert.Nil(t, err)
 		assert.Empty(t, urls)
@@ -64,7 +65,7 @@ func TestInMemoryURLRepository_GetAll(t *testing.T) {
 		repo := repository.NewInMemoryURLRepository()
 		fillRepository(repo, 10)
 
-		urls, err := repo.GetAll(context.Background())
+		urls, err := repo.GetAll(testContext)
 
 		assert.Nil(t, err)
 		assert.Equal(t, 10, len(urls))
@@ -76,7 +77,7 @@ func TestInMemoryURLRepository_GetByCode(t *testing.T) {
 		repo := repository.NewInMemoryURLRepository()
 		fillRepository(repo, 10)
 
-		url, err := repo.GetByCode(context.Background(), "http://not-found-short.url")
+		url, err := repo.GetByCode(testContext, "http://not-found-short.url")
 
 		assert.NotNil(t, err)
 		assert.Equal(t, entity.ErrNotFound(), err)
@@ -87,7 +88,7 @@ func TestInMemoryURLRepository_GetByCode(t *testing.T) {
 		repo := repository.NewInMemoryURLRepository()
 		fillRepository(repo, 10)
 
-		url, err := repo.GetByCode(context.Background(), "random-1")
+		url, err := repo.GetByCode(testContext, "random-1")
 
 		assert.Nil(t, err)
 		assert.NotNil(t, url)
@@ -96,9 +97,17 @@ func TestInMemoryURLRepository_GetByCode(t *testing.T) {
 	})
 }
 
+func TestTestInMemoryURLRepository_IsAlive(t *testing.T) {
+	t.Run("always returns true", func(t *testing.T) {
+		repo := repository.NewInMemoryURLRepository()
+		alive := repo.IsAlive(testContext)
+		assert.True(t, alive)
+	})
+}
+
 func fillRepository(repo *repository.InMemoryURLRepository, numberOfURL int) {
 	for i := 0; i < numberOfURL; i++ {
-		_ = repo.Save(context.Background(), createURL(fmt.Sprintf("http://original-random-%d.url", i), fmt.Sprintf("random-%d", i)))
+		_ = repo.Save(testContext, createURL(fmt.Sprintf("http://original-random-%d.url", i), fmt.Sprintf("random-%d", i)))
 	}
 }
 
