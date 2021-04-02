@@ -39,28 +39,21 @@ message CreateShortURLRequest {
 }
 
 message CreateShortURLResponse {
-  string short_url = 1;
-  google.protobuf.Timestamp expired_at = 2;
+  URL url = 1;
 }
 
 message GetAllURLRequest {
 }
 
 message GetAllURLResponse {
-  string code = 1;
-  string short_url = 2;
-  string original_url = 3;
-  google.protobuf.Timestamp expired_at = 4;
+  repeated URL urls = 1;
 }
 
 message StreamAllURLRequest {
 }
 
 message StreamAllURLResponse {
-  string code = 1;
-  string short_url = 2;
-  string original_url = 3;
-  google.protobuf.Timestamp expired_at = 4;
+  URL url = 1;
 }
 
 message GetURLDetailRequest {
@@ -68,6 +61,10 @@ message GetURLDetailRequest {
 }
 
 message GetURLDetailResponse {
+  URL url = 1;
+}
+
+message URL {
   string code = 1;
   string short_url = 2;
   string original_url = 3;
