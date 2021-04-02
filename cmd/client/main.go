@@ -16,7 +16,7 @@ func main() {
 	cfg, err := config.NewConfig(".env")
 	checkError(err)
 
-	conn, err := grpc.Dial(fmt.Sprintf(":%s", cfg.Port), grpc.WithInsecure())
+	conn, err := grpc.Dial(fmt.Sprintf(":%s", cfg.PortGRPC), grpc.WithInsecure())
 	checkError(err)
 	defer conn.Close()
 
