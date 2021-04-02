@@ -35,7 +35,7 @@ func NewShortURLGenerator(domain string) *ShortURLGenerator {
 }
 
 // Generate generates a code and a short URL with the given length.
-func (sg *ShortURLGenerator) Generate(length uint) (string, string, *entity.Error) {
+func (sg *ShortURLGenerator) Generate(length uint) (string, string, error) {
 	code, err := sg.generateRandomString(length)
 	if err != nil {
 		return "", "", entity.WrapError(entity.ErrInternalServer, err.Error())

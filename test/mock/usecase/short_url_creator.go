@@ -37,11 +37,11 @@ func (m *MockCreateShortURL) EXPECT() *MockCreateShortURLMockRecorder {
 }
 
 // Create mocks base method
-func (m *MockCreateShortURL) Create(ctx context.Context, url string) (*entity.URL, *entity.Error) {
+func (m *MockCreateShortURL) Create(ctx context.Context, url string) (*entity.URL, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Create", ctx, url)
 	ret0, _ := ret[0].(*entity.URL)
-	ret1, _ := ret[1].(*entity.Error)
+	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
@@ -75,12 +75,12 @@ func (m *MockURLGenerator) EXPECT() *MockURLGeneratorMockRecorder {
 }
 
 // Generate mocks base method
-func (m *MockURLGenerator) Generate(length uint) (string, string, *entity.Error) {
+func (m *MockURLGenerator) Generate(length uint) (string, string, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Generate", length)
 	ret0, _ := ret[0].(string)
 	ret1, _ := ret[1].(string)
-	ret2, _ := ret[2].(*entity.Error)
+	ret2, _ := ret[2].(error)
 	return ret0, ret1, ret2
 }
 
@@ -114,10 +114,10 @@ func (m *MockCreateShortURLRepository) EXPECT() *MockCreateShortURLRepositoryMoc
 }
 
 // Save mocks base method
-func (m *MockCreateShortURLRepository) Save(ctx context.Context, url *entity.URL) *entity.Error {
+func (m *MockCreateShortURLRepository) Save(ctx context.Context, url *entity.URL) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Save", ctx, url)
-	ret0, _ := ret[0].(*entity.Error)
+	ret0, _ := ret[0].(error)
 	return ret0
 }
 
