@@ -10,7 +10,7 @@ import (
 type MockURLGeneratorV2 struct {
 	code string
 	url  string
-	err  *entity.Error
+	err  error
 }
 
 func NewMockURLGeneratorV2() *MockURLGeneratorV2 {
@@ -18,20 +18,20 @@ func NewMockURLGeneratorV2() *MockURLGeneratorV2 {
 }
 
 // SetReturnValues sets return values.
-func (m *MockURLGeneratorV2) SetReturnValues(code, url string, err *entity.Error) {
+func (m *MockURLGeneratorV2) SetReturnValues(code, url string, err error) {
 	m.code = code
 	m.url = url
 	m.err = err
 }
 
 // Generate mocks base method
-func (m *MockURLGeneratorV2) Generate(_ uint) (string, string, *entity.Error) {
+func (m *MockURLGeneratorV2) Generate(_ uint) (string, string, error) {
 	return m.code, m.url, m.err
 }
 
 // MockCreateShortURLRepositoryV2 is a mock of CreateShortURLRepository interface
 type MockCreateShortURLRepositoryV2 struct {
-	value *entity.Error
+	value error
 }
 
 func NewMockCreateShortURLRepositoryV2() *MockCreateShortURLRepositoryV2 {
@@ -39,11 +39,11 @@ func NewMockCreateShortURLRepositoryV2() *MockCreateShortURLRepositoryV2 {
 }
 
 // SetReturnValues sets return values.
-func (m *MockCreateShortURLRepositoryV2) SetReturnValues(value *entity.Error) {
+func (m *MockCreateShortURLRepositoryV2) SetReturnValues(value error) {
 	m.value = value
 }
 
 // Generate mocks base method
-func (m *MockCreateShortURLRepositoryV2) Save(_ context.Context, _ *entity.URL) *entity.Error {
+func (m *MockCreateShortURLRepositoryV2) Save(_ context.Context, _ *entity.URL) error {
 	return m.value
 }

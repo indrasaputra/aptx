@@ -37,11 +37,11 @@ func (m *MockGetURL) EXPECT() *MockGetURLMockRecorder {
 }
 
 // GetAll mocks base method
-func (m *MockGetURL) GetAll(ctx context.Context) ([]*entity.URL, *entity.Error) {
+func (m *MockGetURL) GetAll(ctx context.Context) ([]*entity.URL, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetAll", ctx)
 	ret0, _ := ret[0].([]*entity.URL)
-	ret1, _ := ret[1].(*entity.Error)
+	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
@@ -52,11 +52,11 @@ func (mr *MockGetURLMockRecorder) GetAll(ctx interface{}) *gomock.Call {
 }
 
 // GetByCode mocks base method
-func (m *MockGetURL) GetByCode(ctx context.Context, code string) (*entity.URL, *entity.Error) {
+func (m *MockGetURL) GetByCode(ctx context.Context, code string) (*entity.URL, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetByCode", ctx, code)
 	ret0, _ := ret[0].(*entity.URL)
-	ret1, _ := ret[1].(*entity.Error)
+	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
@@ -90,11 +90,11 @@ func (m *MockGetURLRepository) EXPECT() *MockGetURLRepositoryMockRecorder {
 }
 
 // GetAll mocks base method
-func (m *MockGetURLRepository) GetAll(ctx context.Context) ([]*entity.URL, *entity.Error) {
+func (m *MockGetURLRepository) GetAll(ctx context.Context) ([]*entity.URL, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetAll", ctx)
 	ret0, _ := ret[0].([]*entity.URL)
-	ret1, _ := ret[1].(*entity.Error)
+	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
@@ -105,11 +105,11 @@ func (mr *MockGetURLRepositoryMockRecorder) GetAll(ctx interface{}) *gomock.Call
 }
 
 // GetByCode mocks base method
-func (m *MockGetURLRepository) GetByCode(ctx context.Context, code string) (*entity.URL, *entity.Error) {
+func (m *MockGetURLRepository) GetByCode(ctx context.Context, code string) (*entity.URL, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetByCode", ctx, code)
 	ret0, _ := ret[0].(*entity.URL)
-	ret1, _ := ret[1].(*entity.Error)
+	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 

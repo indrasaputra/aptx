@@ -22,7 +22,7 @@ func NewInMemoryURLRepository() *InMemoryURLRepository {
 // Save saves a new data into storage.
 // It checks whether the code / short URL already exists in the storage.
 // If the data already exists, it will return ErrDuplicatedShortURL.
-func (ir *InMemoryURLRepository) Save(ctx context.Context, url *entity.URL) *entity.Error {
+func (ir *InMemoryURLRepository) Save(ctx context.Context, url *entity.URL) error {
 	_, exist := ir.data[url.Code]
 	if exist {
 		return entity.ErrDuplicatedShortURL
@@ -34,7 +34,7 @@ func (ir *InMemoryURLRepository) Save(ctx context.Context, url *entity.URL) *ent
 
 // GetAll gets all URLs in storage.
 // Since the implementation uses HashMap, the data may be unordered.
-func (ir *InMemoryURLRepository) GetAll(ctx context.Context) ([]*entity.URL, *entity.Error) {
+func (ir *InMemoryURLRepository) GetAll(ctx context.Context) ([]*entity.URL, error) {
 	urls := []*entity.URL{}
 	for _, url := range ir.data {
 		urls = append(urls, url)
@@ -44,7 +44,7 @@ func (ir *InMemoryURLRepository) GetAll(ctx context.Context) ([]*entity.URL, *en
 
 // GetByCode gets a single URLs in storage.
 // If the URL can't be found, it returns ErrURLNotFound.
-func (ir *InMemoryURLRepository) GetByCode(ctx context.Context, code string) (*entity.URL, *entity.Error) {
+func (ir *InMemoryURLRepository) GetByCode(ctx context.Context, code string) (*entity.URL, error) {
 	url, found := ir.data[code]
 	if !found {
 		return nil, entity.ErrURLNotFound
