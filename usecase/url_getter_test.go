@@ -46,12 +46,12 @@ func TestURLGetter_GetAll(t *testing.T) {
 
 	t.Run("repository returns error", func(t *testing.T) {
 		exec := createURLGetterExecutor(ctrl)
-		exec.repo.EXPECT().GetAll(context.Background()).Return([]*entity.URL{}, entity.ErrInternalServer)
+		exec.repo.EXPECT().GetAll(context.Background()).Return([]*entity.URL{}, entity.ErrInternal(testErrInternalMessage))
 
 		urls, err := exec.usecase.GetAll(context.Background())
 
 		assert.NotNil(t, err)
-		assert.Equal(t, entity.ErrInternalServer, err)
+		assert.Equal(t, entity.ErrInternal(testErrInternalMessage), err)
 		assert.Empty(t, urls)
 	})
 
@@ -72,23 +72,23 @@ func TestURLGetter_GetByCode(t *testing.T) {
 
 	t.Run("repository returns error", func(t *testing.T) {
 		exec := createURLGetterExecutor(ctrl)
-		exec.repo.EXPECT().GetByCode(context.Background(), testURLCode).Return(&entity.URL{}, entity.ErrInternalServer)
+		exec.repo.EXPECT().GetByCode(context.Background(), testURLCode).Return(&entity.URL{}, entity.ErrInternal(testErrInternalMessage))
 
 		urls, err := exec.usecase.GetByCode(context.Background(), testURLCode)
 
 		assert.NotNil(t, err)
-		assert.Equal(t, entity.ErrInternalServer, err)
+		assert.Equal(t, entity.ErrInternal(testErrInternalMessage), err)
 		assert.Empty(t, urls)
 	})
 
 	t.Run("url can't be found", func(t *testing.T) {
 		exec := createURLGetterExecutor(ctrl)
-		exec.repo.EXPECT().GetByCode(context.Background(), testURLCode).Return(&entity.URL{}, entity.ErrURLNotFound)
+		exec.repo.EXPECT().GetByCode(context.Background(), testURLCode).Return(&entity.URL{}, entity.ErrNotFound())
 
 		urls, err := exec.usecase.GetByCode(context.Background(), testURLCode)
 
 		assert.NotNil(t, err)
-		assert.Equal(t, entity.ErrURLNotFound, err)
+		assert.Equal(t, entity.ErrNotFound(), err)
 		assert.Empty(t, urls)
 	})
 

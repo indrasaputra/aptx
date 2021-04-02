@@ -12,9 +12,10 @@ import (
 )
 
 var (
-	testURLCode     = "AbCdE12"
-	testURLShort    = "http://localhost/" + testURLCode
-	testURLOriginal = "http://very-long-url.url"
+	testURLCode            = "AbCdE12"
+	testURLShort           = "http://localhost/" + testURLCode
+	testURLOriginal        = "http://very-long-url.url"
+	testErrInternalMessage = "unexpected command"
 )
 
 type ShortURLCreatorExecutor struct {
@@ -39,7 +40,7 @@ func TestShortURLCreator_Create(t *testing.T) {
 			res, err := exec.usecase.Create(context.Background(), url)
 
 			assert.NotNil(t, err)
-			assert.Equal(t, entity.ErrEmptyURL, err)
+			assert.Equal(t, entity.ErrEmptyURL(), err)
 			assert.Nil(t, res)
 		}
 	})
@@ -47,12 +48,12 @@ func TestShortURLCreator_Create(t *testing.T) {
 	t.Run("generator always returns error", func(t *testing.T) {
 		exec := createShortURLCreatorExecutor()
 
-		exec.generator.SetReturnValues("", "", entity.ErrInternalServer)
+		exec.generator.SetReturnValues("", "", entity.ErrInternal(testErrInternalMessage))
 
 		res, err := exec.usecase.Create(context.Background(), testURLOriginal)
 
 		assert.NotNil(t, err)
-		assert.Equal(t, entity.ErrInternalServer, err)
+		assert.Equal(t, entity.ErrInternal(testErrInternalMessage), err)
 		assert.Nil(t, res)
 	})
 
@@ -60,7 +61,7 @@ func TestShortURLCreator_Create(t *testing.T) {
 		exec := createShortURLCreatorExecutor()
 
 		exec.generator.SetReturnValues(testURLCode, testURLShort, nil)
-		exec.repo.SetReturnValues(entity.ErrInternalServer)
+		exec.repo.SetReturnValues(entity.ErrInternal(testErrInternalMessage))
 
 		res, err := exec.usecase.Create(context.Background(), testURLOriginal)
 
