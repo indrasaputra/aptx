@@ -28,7 +28,7 @@ func TestInMemoryURLRepository_Save(t *testing.T) {
 		repo := repository.NewInMemoryURLRepository()
 		for i, code := range testCodes {
 			url := createURL(fmt.Sprintf("http://original-%d.url", i), code)
-			repo.Save(context.Background(), url)
+			_ = repo.Save(context.Background(), url)
 		}
 
 		for i, code := range testCodes {
@@ -98,7 +98,7 @@ func TestInMemoryURLRepository_GetByCode(t *testing.T) {
 
 func fillRepository(repo *repository.InMemoryURLRepository, numberOfURL int) {
 	for i := 0; i < numberOfURL; i++ {
-		repo.Save(context.Background(), createURL(fmt.Sprintf("http://original-random-%d.url", i), fmt.Sprintf("random-%d", i)))
+		_ = repo.Save(context.Background(), createURL(fmt.Sprintf("http://original-random-%d.url", i), fmt.Sprintf("random-%d", i)))
 	}
 }
 
