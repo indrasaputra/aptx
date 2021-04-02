@@ -1,0 +1,230 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "proto/indrasaputra/shortener/v1/shortener.proto",
+    "version": "version not set"
+  },
+  "tags": [
+    {
+      "name": "URLShortenerService"
+    }
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/v1/stream/urls": {
+      "get": {
+        "operationId": "URLShortenerService_StreamAllURL",
+        "responses": {
+          "200": {
+            "description": "A successful response.(streaming responses)",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "result": {
+                  "$ref": "#/definitions/v1StreamAllURLResponse"
+                },
+                "error": {
+                  "$ref": "#/definitions/rpcStatus"
+                }
+              },
+              "title": "Stream result of v1StreamAllURLResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "URLShortenerService"
+        ]
+      }
+    },
+    "/v1/urls": {
+      "get": {
+        "operationId": "URLShortenerService_GetAllURL",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1GetAllURLResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "URLShortenerService"
+        ]
+      },
+      "post": {
+        "operationId": "URLShortenerService_CreateShortURL",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1CreateShortURLResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1CreateShortURLRequest"
+            }
+          }
+        ],
+        "tags": [
+          "URLShortenerService"
+        ]
+      }
+    },
+    "/v1/urls/{code}": {
+      "get": {
+        "operationId": "URLShortenerService_GetURLDetail",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1GetURLDetailResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "code",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "URLShortenerService"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "typeUrl": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string",
+          "format": "byte"
+        }
+      }
+    },
+    "rpcStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    },
+    "v1CreateShortURLRequest": {
+      "type": "object",
+      "properties": {
+        "originalUrl": {
+          "type": "string"
+        }
+      }
+    },
+    "v1CreateShortURLResponse": {
+      "type": "object",
+      "properties": {
+        "url": {
+          "$ref": "#/definitions/v1URL"
+        }
+      }
+    },
+    "v1GetAllURLResponse": {
+      "type": "object",
+      "properties": {
+        "urls": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/v1URL"
+          }
+        }
+      }
+    },
+    "v1GetURLDetailResponse": {
+      "type": "object",
+      "properties": {
+        "url": {
+          "$ref": "#/definitions/v1URL"
+        }
+      }
+    },
+    "v1StreamAllURLResponse": {
+      "type": "object",
+      "properties": {
+        "url": {
+          "$ref": "#/definitions/v1URL"
+        }
+      }
+    },
+    "v1URL": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "shortUrl": {
+          "type": "string"
+        },
+        "originalUrl": {
+          "type": "string"
+        },
+        "expiredAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    }
+  }
+}
