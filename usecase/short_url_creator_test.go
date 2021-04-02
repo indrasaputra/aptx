@@ -12,6 +12,7 @@ import (
 )
 
 var (
+	testContext            = context.Background()
 	testURLCode            = "AbCdE12"
 	testURLShort           = "http://localhost/" + testURLCode
 	testURLOriginal        = "http://very-long-url.url"
@@ -37,7 +38,7 @@ func TestShortURLCreator_Create(t *testing.T) {
 		urls := []string{"", "   ", "        ", "     "}
 
 		for _, url := range urls {
-			res, err := exec.usecase.Create(context.Background(), url)
+			res, err := exec.usecase.Create(testContext, url)
 
 			assert.NotNil(t, err)
 			assert.Equal(t, entity.ErrEmptyURL(), err)
@@ -50,7 +51,7 @@ func TestShortURLCreator_Create(t *testing.T) {
 
 		exec.generator.SetReturnValues("", "", entity.ErrInternal(testErrInternalMessage))
 
-		res, err := exec.usecase.Create(context.Background(), testURLOriginal)
+		res, err := exec.usecase.Create(testContext, testURLOriginal)
 
 		assert.NotNil(t, err)
 		assert.Equal(t, entity.ErrInternal(testErrInternalMessage), err)
@@ -63,7 +64,7 @@ func TestShortURLCreator_Create(t *testing.T) {
 		exec.generator.SetReturnValues(testURLCode, testURLShort, nil)
 		exec.repo.SetReturnValues(entity.ErrInternal(testErrInternalMessage))
 
-		res, err := exec.usecase.Create(context.Background(), testURLOriginal)
+		res, err := exec.usecase.Create(testContext, testURLOriginal)
 
 		assert.NotNil(t, err)
 		assert.Nil(t, res)
@@ -75,7 +76,7 @@ func TestShortURLCreator_Create(t *testing.T) {
 		exec.generator.SetReturnValues(testURLCode, testURLShort, nil)
 		exec.repo.SetReturnValues(nil)
 
-		res, err := exec.usecase.Create(context.Background(), testURLOriginal)
+		res, err := exec.usecase.Create(testContext, testURLOriginal)
 
 		assert.Nil(t, err)
 		assert.NotNil(t, res)
