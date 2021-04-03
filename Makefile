@@ -62,7 +62,7 @@ docker-build-all: docker-build-server docker-build-envoy
 
 .PHONY: docker-run-server
 docker-run-server:
-	docker run -p 8080:8080 --env-file .env url-shortener-server:latest
+	docker run -p 8080:8080 -p 8081:8081 --env-file .env url-shortener-server:latest
 
 .PHONY: docker-run-envoy
 docker-run-envoy:
