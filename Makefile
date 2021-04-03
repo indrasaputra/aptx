@@ -79,3 +79,19 @@ docker-down:
 .PHONY: run-prometheus
 run-prometheus:
 	docker run -p 9090:9090 -v ${PWD}/infrastructure/prometheus.yml:/etc/prometheus/prometheus.yml prom/prometheus:v2.26.0
+
+.PHONY: migration
+migration:
+	migrate create -ext sql -dir db/migrations $(name)
+
+.PHONY: migrate
+migrate:
+	migrate -path db/migrations -database $(url) up
+
+.PHONY: rollback
+rollback:
+	migrate -path db/migrations -database $(url) down 1
+
+.PHONY: force-migrate
+force-migrate:
+	migrate -path db/migrations -database $(url) force $(version)
