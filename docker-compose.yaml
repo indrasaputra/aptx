@@ -1,19 +1,22 @@
 version: '3'
 
 services:
-  proxy:
-    image: url-shortener-envoy:latest
-    ports:
-      - 9090:9090
-    networks:
-      - url-shortener
-
   server:
     image: url-shortener-server:latest
     env_file:
       - .env
     ports:
       - 8080:8080
+      - 8081:8081
+    networks:
+      - url-shortener
+
+  prometheus:
+    image: prom/prometheus:v2.26.0
+    ports:
+      - 9090:9090
+    volumes:
+      - ${PWD}/infrastructure/prometheus.yml:/etc/prometheus/prometheus.yml
     networks:
       - url-shortener
 
