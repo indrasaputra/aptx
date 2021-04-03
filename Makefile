@@ -75,3 +75,7 @@ docker-run-all:
 .PHONY: docker-down
 docker-down:
 	docker-compose --env-file .env down
+
+.PHONY: run-prometheus
+run-prometheus:
+	docker run -p 9090:9090 -v ${PWD}/infrastructure/prometheus.yml:/etc/prometheus/prometheus.yml prom/prometheus:v2.26.0
