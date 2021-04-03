@@ -37,6 +37,10 @@ To see the RESTful API contract, do the following:
 - Read [Prerequisites](doc/PREREQUISITES.md)
 - Then, read [Development Guide](doc/DEVELOPMENT_GUIDE.md)
 
+## Code Map
+
+- Read [Code Map](doc/CODE_MAP.md)
+
 ## FAQs
 
 - Read [FAQs](doc/FAQS.md)
