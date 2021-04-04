@@ -50,6 +50,7 @@ var (
 		"created_at",
 		testURLCreatedAt.Format(time.RFC3339),
 	}
+	testRedisDownMessage = "redis down"
 )
 
 type URLRedisExecutor struct {
@@ -79,12 +80,12 @@ func TestURLRedis_Save(t *testing.T) {
 	t.Run("redis is down", func(t *testing.T) {
 		exec := createURLRedisExecutor()
 		exec.mock.ExpectHSet(testURLCode, testHSetInput).SetVal(5)
-		exec.mock.ExpectExpireAt(testURLCode, testURLExpiredAt).SetErr(errors.New("redis down"))
+		exec.mock.ExpectExpireAt(testURLCode, testURLExpiredAt).SetErr(errors.New(testRedisDownMessage))
 
 		err := exec.redis.Save(testContext, testURL)
 
 		assert.NotNil(t, err)
-		assert.Contains(t, err.Error(), "redis down")
+		assert.Contains(t, err.Error(), testRedisDownMessage)
 	})
 
 	t.Run("success save url in redis hash", func(t *testing.T) {
@@ -101,7 +102,7 @@ func TestURLRedis_Save(t *testing.T) {
 func TestURLRedis_Get(t *testing.T) {
 	t.Run("redis hgetall returns error", func(t *testing.T) {
 		exec := createURLRedisExecutor()
-		exec.mock.ExpectHGetAll(testURLCode).SetErr(errors.New("redis down"))
+		exec.mock.ExpectHGetAll(testURLCode).SetErr(errors.New(testRedisDownMessage))
 
 		url, err := exec.redis.Get(testContext, testURLCode)
 
