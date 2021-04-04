@@ -17,6 +17,7 @@ import (
 )
 
 var (
+	testContext      = context.Background()
 	testURLCode      = "AbCdE12"
 	testURLShort     = "http://localhost/" + testURLCode
 	testURLOriginal  = "http://very-long-url.url"
@@ -69,7 +70,7 @@ func TestURLRedis_Save(t *testing.T) {
 		exec.mock.ExpectHSet(testURLCode, testHSetInput).SetVal(2)
 		exec.mock.ExpectExpireAt(testURLCode, testURLExpiredAt).SetVal(true)
 
-		err := exec.redis.Save(context.Background(), testURL)
+		err := exec.redis.Save(testContext, testURL)
 
 		assert.NotNil(t, err)
 		assert.Contains(t, err.Error(), "only success to save 2 out of 5 attributes")
@@ -80,7 +81,7 @@ func TestURLRedis_Save(t *testing.T) {
 		exec.mock.ExpectHSet(testURLCode, testHSetInput).SetVal(5)
 		exec.mock.ExpectExpireAt(testURLCode, testURLExpiredAt).SetErr(errors.New("redis down"))
 
-		err := exec.redis.Save(context.Background(), testURL)
+		err := exec.redis.Save(testContext, testURL)
 
 		assert.NotNil(t, err)
 		assert.Contains(t, err.Error(), "redis down")
@@ -91,7 +92,7 @@ func TestURLRedis_Save(t *testing.T) {
 		exec.mock.ExpectHSet(testURLCode, testHSetInput).SetVal(5)
 		exec.mock.ExpectExpireAt(testURLCode, testURLExpiredAt).SetVal(true)
 
-		err := exec.redis.Save(context.Background(), testURL)
+		err := exec.redis.Save(testContext, testURL)
 
 		assert.Nil(t, err)
 	})
@@ -102,7 +103,7 @@ func TestURLRedis_Get(t *testing.T) {
 		exec := createURLRedisExecutor()
 		exec.mock.ExpectHGetAll(testURLCode).SetErr(errors.New("redis down"))
 
-		url, err := exec.redis.Get(context.Background(), testURLCode)
+		url, err := exec.redis.Get(testContext, testURLCode)
 
 		assert.NotNil(t, err)
 		assert.Equal(t, codes.Internal, status.Code(err))
@@ -113,7 +114,7 @@ func TestURLRedis_Get(t *testing.T) {
 		exec := createURLRedisExecutor()
 		exec.mock.ExpectHGetAll(testURLCode).SetVal(testEmptyMapResult)
 
-		url, err := exec.redis.Get(context.Background(), testURLCode)
+		url, err := exec.redis.Get(testContext, testURLCode)
 
 		assert.NotNil(t, err)
 		assert.Equal(t, codes.NotFound, status.Code(err))
@@ -126,7 +127,7 @@ func TestURLRedis_Get(t *testing.T) {
 		hash["expired_at"] = ""
 		exec.mock.ExpectHGetAll(testURLCode).SetVal(hash)
 
-		url, err := exec.redis.Get(context.Background(), testURLCode)
+		url, err := exec.redis.Get(testContext, testURLCode)
 
 		assert.NotNil(t, err)
 		assert.Equal(t, codes.Internal, status.Code(err))
@@ -140,7 +141,7 @@ func TestURLRedis_Get(t *testing.T) {
 		hash["created_at"] = ""
 		exec.mock.ExpectHGetAll(testURLCode).SetVal(hash)
 
-		url, err := exec.redis.Get(context.Background(), testURLCode)
+		url, err := exec.redis.Get(testContext, testURLCode)
 
 		assert.NotNil(t, err)
 		assert.Equal(t, codes.Internal, status.Code(err))
@@ -151,7 +152,7 @@ func TestURLRedis_Get(t *testing.T) {
 		exec := createURLRedisExecutor()
 		exec.mock.ExpectHGetAll(testURLCode).SetVal(testValidMapResult)
 
-		url, err := exec.redis.Get(context.Background(), testURLCode)
+		url, err := exec.redis.Get(testContext, testURLCode)
 		fmt.Println(err)
 
 		assert.Nil(t, err)
