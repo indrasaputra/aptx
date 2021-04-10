@@ -91,3 +91,9 @@ func (ur *URLPostgres) GetByCode(ctx context.Context, code string) (*entity.URL,
 	}
 	return &res, nil
 }
+
+// IsAlive must returns true if Postgres can connect without any problem.
+// It basically calls Ping() method.
+func (ur *URLPostgres) IsAlive(ctx context.Context) bool {
+	return ur.db.PingContext(ctx) == nil
+}

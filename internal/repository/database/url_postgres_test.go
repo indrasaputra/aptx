@@ -202,8 +202,28 @@ func TestURLPostgres_GetByCode(t *testing.T) {
 	})
 }
 
+func TestURLPostgres_IsAlive(t *testing.T) {
+	t.Run("postgres is not alive", func(t *testing.T) {
+		exec := createURLPostgresExecutor()
+		exec.sql.ExpectPing().WillReturnError(errPostgresInternal)
+
+		alive := exec.database.IsAlive(testContext)
+
+		assert.False(t, alive)
+	})
+
+	t.Run("postgres is not alive", func(t *testing.T) {
+		exec := createURLPostgresExecutor()
+		exec.sql.ExpectPing().WillReturnError(nil)
+
+		alive := exec.database.IsAlive(testContext)
+
+		assert.True(t, alive)
+	})
+}
+
 func createURLPostgresExecutor() *URLPostgresExecutor {
-	db, mock, err := sqlmock.New()
+	db, mock, err := sqlmock.New(sqlmock.MonitorPingsOption(true))
 	if err != nil {
 		log.Panicf("error opening a stub database connection: %v\n", err)
 	}

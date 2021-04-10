@@ -10,6 +10,10 @@ import (
 	"github.com/indrasaputra/url-shortener/entity"
 )
 
+const (
+	redisPong = "PONG"
+)
+
 var (
 	attributes        = []string{"code", "short_url", "original_url", "_expired_at", "created_at"}
 	numberOfAttribute = len(attributes)
@@ -55,6 +59,13 @@ func (ur *URLRedis) Get(ctx context.Context, key string) (*entity.URL, error) {
 		return nil, entity.ErrNotFound()
 	}
 	return createURLFromHash(hash)
+}
+
+// IsAlive must returns true if Redis can connect without any problem.
+// It basically calls PING command.
+func (ur *URLRedis) IsAlive(ctx context.Context) bool {
+	res, err := ur.client.Ping(ctx).Result()
+	return err == nil && res == redisPong
 }
 
 func createURLFromHash(hash map[string]string) (*entity.URL, error) {
