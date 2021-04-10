@@ -6,6 +6,13 @@ import (
 	"github.com/pkg/errors"
 )
 
+// Redis holds configuration for the redis.
+type Redis struct {
+	Address  string `env:"REDIS_ADDRESS,required"`
+	Username string `env:"REDIS_USERNAME"`
+	Password string `env:"REDIS_PASSWORD"`
+}
+
 // Postgres holds configuration for PostgreSQL.
 type Postgres struct {
 	Host         string `env:"POSTGRES_HOST,required"`
@@ -23,6 +30,7 @@ type Config struct {
 	PortGRPC string `env:"PORT_GRPC,default=8080"`
 	Domain   string `env:"DOMAIN,required"`
 	Postgres Postgres
+	Redis    Redis
 }
 
 // NewConfig creates an instance of Config.
