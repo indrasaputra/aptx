@@ -3,21 +3,19 @@ package main
 import (
 	"context"
 	"fmt"
-	"net"
-	"net/http"
 
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	grpc_zap "github.com/grpc-ecosystem/go-grpc-middleware/logging/zap"
 	grpc_prometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
-	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
-	grpchealthv1 "google.golang.org/grpc/health/grpc_health_v1"
+	"google.golang.org/grpc/health/grpc_health_v1"
 
 	"github.com/indrasaputra/url-shortener/internal/builder"
 	"github.com/indrasaputra/url-shortener/internal/config"
 	"github.com/indrasaputra/url-shortener/internal/http2/grpc/handler"
+	"github.com/indrasaputra/url-shortener/internal/http2/grpc/server"
 	shortenerv1 "github.com/indrasaputra/url-shortener/proto/indrasaputra/shortener/v1"
 )
 
@@ -30,66 +28,61 @@ func main() {
 	redis, rerr := builder.BuildRedisClient(cfg.Redis)
 	checkError(rerr)
 
-	shortenerHandler := builder.BuildGRPCURLShortener(postgres, redis, cfg.Domain)
-	healthCheckerHandler := builder.BuildGRPCHealthChecker(postgres, redis)
+	shortener := builder.BuildGRPCURLShortener(postgres, redis, cfg.Domain)
+	health := builder.BuildGRPCHealthChecker(postgres, redis)
 
-	grpcServer := createGRPCServer()
-	registerGRPCServer(grpcServer, shortenerHandler, healthCheckerHandler)
-	runGRPCServer(grpcServer, cfg)
-
-	restServer := createRestServer(cfg)
-	registerRestServer(restServer)
-
-	// Start HTTP server (and proxy calls to gRPC server endpoint)
-	_ = http.ListenAndServe(fmt.Sprintf(":%s", cfg.PortHTTP), restServer)
-}
-
-func createGRPCServer() *grpc.Server {
 	logger, zerr := zap.NewProduction()
 	checkError(zerr)
-
 	grpc_zap.ReplaceGrpcLoggerV2(logger)
-	server := grpc.NewServer(
+
+	grpcServer := server.NewGRPC(cfg.PortGRPC,
 		grpc_middleware.WithUnaryServerChain(
 			grpc_zap.UnaryServerInterceptor(logger),
 			grpc_prometheus.UnaryServerInterceptor,
 		),
 	)
-	return server
+	grpcServer.RegisterServices(
+		registerGRPCPrometheus(),
+		registerGRPCURLShortenerService(shortener),
+		registerGRPCHealthService(health),
+	)
+	_ = grpcServer.Run()
+
+	restServer := server.NewRest(cfg.PortHTTP)
+	promerr := restServer.EnablePrometheus()
+	checkError(promerr)
+
+	restServer.RegisterEndpoints(
+		registerRestURLShortenerEndpoint(cfg.PortGRPC, grpc.WithInsecure()),
+	)
+	_ = restServer.Run()
+
+	_ = grpcServer.AwaitTermination()
 }
 
-func registerGRPCServer(server *grpc.Server, shortenerHandler *handler.URLShortener, healthCheckerHandler *handler.HealthChecker) {
-	grpc_prometheus.EnableHandlingTimeHistogram()
-	grpc_prometheus.Register(server)
-
-	shortenerv1.RegisterURLShortenerServiceServer(server, shortenerHandler)
-	grpchealthv1.RegisterHealthServer(server, healthCheckerHandler)
+func registerGRPCPrometheus() server.RegisterServiceFunc {
+	return func(server *grpc.Server) {
+		grpc_prometheus.EnableHandlingTimeHistogram()
+		grpc_prometheus.Register(server)
+	}
 }
 
-func runGRPCServer(server *grpc.Server, cfg *config.Config) {
-	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", cfg.PortGRPC))
-	checkError(err)
-	go func() {
-		_ = server.Serve(lis)
-	}()
+func registerGRPCURLShortenerService(shortener *handler.URLShortener) server.RegisterServiceFunc {
+	return func(server *grpc.Server) {
+		shortenerv1.RegisterURLShortenerServiceServer(server, shortener)
+	}
 }
 
-func createRestServer(cfg *config.Config) *runtime.ServeMux {
-	mux := runtime.NewServeMux()
-	opts := []grpc.DialOption{grpc.WithInsecure()}
-	serr := shortenerv1.RegisterURLShortenerServiceHandlerFromEndpoint(context.Background(), mux, fmt.Sprintf(":%s", cfg.PortGRPC), opts)
-	checkError(serr)
-	return mux
+func registerGRPCHealthService(health *handler.HealthChecker) server.RegisterServiceFunc {
+	return func(server *grpc.Server) {
+		grpc_health_v1.RegisterHealthServer(server, health)
+	}
 }
 
-func registerRestServer(server *runtime.ServeMux) {
-	merr := server.HandlePath(http.MethodGet, "/metrics", promHandler())
-	checkError(merr)
-}
-
-func promHandler() runtime.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request, _ map[string]string) {
-		promhttp.Handler().ServeHTTP(w, r)
+func registerRestURLShortenerEndpoint(grpcPort string, options ...grpc.DialOption) server.RegisterEndpointFunc {
+	return func(server *runtime.ServeMux) {
+		err := shortenerv1.RegisterURLShortenerServiceHandlerFromEndpoint(context.Background(), server, fmt.Sprintf(":%s", grpcPort), options)
+		checkError(err)
 	}
 }
 
