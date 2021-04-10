@@ -161,6 +161,35 @@ func TestURLRedis_Get(t *testing.T) {
 	})
 }
 
+func TestURLRedis_IsAlive(t *testing.T) {
+	t.Run("IsAlive returns error", func(t *testing.T) {
+		exec := createURLRedisExecutor()
+		exec.mock.ExpectPing().SetErr(errors.New("redis: nil"))
+
+		res := exec.redis.IsAlive(context.Background())
+
+		assert.False(t, res)
+	})
+
+	t.Run("IsAlive doesn't return PONG", func(t *testing.T) {
+		exec := createURLRedisExecutor()
+		exec.mock.ExpectPing().SetVal("PINGPONG")
+
+		res := exec.redis.IsAlive(context.Background())
+
+		assert.False(t, res)
+	})
+
+	t.Run("redis is alive", func(t *testing.T) {
+		exec := createURLRedisExecutor()
+		exec.mock.ExpectPing().SetVal("PONG")
+
+		res := exec.redis.IsAlive(context.Background())
+
+		assert.True(t, res)
+	})
+}
+
 func createURLRedisExecutor() *URLRedisExecutor {
 	client, mock := redismock.NewClientMock()
 	rds := cache.NewURLRedis(client)
