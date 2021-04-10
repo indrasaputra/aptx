@@ -6,11 +6,13 @@ import (
 	"fmt"
 
 	"github.com/go-redis/redis/v8"
-	_ "github.com/lib/pq"
+	_ "github.com/lib/pq" // for posgres
 
 	"github.com/indrasaputra/url-shortener/internal/config"
 	"github.com/indrasaputra/url-shortener/internal/http2/grpc/handler"
 	"github.com/indrasaputra/url-shortener/internal/repository"
+	"github.com/indrasaputra/url-shortener/internal/repository/cache"
+	"github.com/indrasaputra/url-shortener/internal/repository/database"
 	"github.com/indrasaputra/url-shortener/internal/tool"
 	"github.com/indrasaputra/url-shortener/usecase"
 )
@@ -57,17 +59,28 @@ func BuildPostgresClient(cfg config.Postgres) (*sql.DB, error) {
 }
 
 // BuildGRPCURLShortener builds URLShortener handler together with all of its dependencies.
-func BuildGRPCURLShortener(domain string) *handler.URLShortener {
+func BuildGRPCURLShortener(db *sql.DB, rds redis.Cmdable, domain string) *handler.URLShortener {
+	redis := cache.NewURLRedis(rds)
+	postgres := database.NewURLPostgres(db)
+
+	repoInserter := repository.NewURLInserter(postgres, redis)
+	repoGetter := repository.NewURLGetter(postgres, redis)
+
 	gen := tool.NewShortURLGenerator(domain)
-	repo := repository.NewInMemoryURLRepository()
-	creator := usecase.NewShortURLCreator(gen, repo)
-	getter := usecase.NewURLGetter(repo)
+
+	creator := usecase.NewShortURLCreator(gen, repoInserter)
+	getter := usecase.NewURLGetter(repoGetter)
+
 	return handler.NewURLShortener(creator, getter)
 }
 
 // BuildGRPCHealthChecker builds HealthChecker handler together with all of its dependencies.
-func BuildGRPCHealthChecker() *handler.HealthChecker {
-	repo := repository.NewInMemoryURLRepository()
+func BuildGRPCHealthChecker(db *sql.DB, rds redis.Cmdable) *handler.HealthChecker {
+	redis := cache.NewURLRedis(rds)
+	postgres := database.NewURLPostgres(db)
+
+	repo := repository.NewHealthChecker(postgres, redis)
+
 	checker := usecase.NewHealthChecker(repo)
 	return handler.NewHealthChecker(checker)
 }
