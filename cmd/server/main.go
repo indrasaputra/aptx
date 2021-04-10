@@ -22,11 +22,16 @@ import (
 )
 
 func main() {
-	cfg, err := config.NewConfig(".env")
-	checkError(err)
+	cfg, cerr := config.NewConfig(".env")
+	checkError(cerr)
 
-	shortenerHandler := builder.BuildGRPCURLShortener(cfg.Domain)
-	healthCheckerHandler := builder.BuildGRPCHealthChecker()
+	postgres, perr := builder.BuildPostgresClient(cfg.Postgres)
+	checkError(perr)
+	redis, rerr := builder.BuildRedisClient(cfg.Redis)
+	checkError(rerr)
+
+	shortenerHandler := builder.BuildGRPCURLShortener(postgres, redis, cfg.Domain)
+	healthCheckerHandler := builder.BuildGRPCHealthChecker(postgres, redis)
 
 	grpcServer := createGRPCServer()
 	registerGRPCServer(grpcServer, shortenerHandler, healthCheckerHandler)

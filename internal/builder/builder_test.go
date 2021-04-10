@@ -1,9 +1,11 @@
 package builder_test
 
 import (
+	"database/sql"
 	"testing"
 
 	"github.com/alicebob/miniredis/v2"
+	"github.com/go-redis/redis/v8"
 	"github.com/stretchr/testify/assert"
 
 	"github.com/indrasaputra/url-shortener/internal/builder"
@@ -61,14 +63,18 @@ func TestBuildPostgresClient(t *testing.T) {
 
 func TestBuildGRPCURLShortener(t *testing.T) {
 	t.Run("successfully create URLShortener handler", func(t *testing.T) {
-		hdr := builder.BuildGRPCURLShortener("http://short-url.com")
+		rds := &redis.Client{}
+		db := &sql.DB{}
+		hdr := builder.BuildGRPCURLShortener(db, rds, "http://short-url.com")
 		assert.NotNil(t, hdr)
 	})
 }
 
 func TestBuildGRPCHealthChecker(t *testing.T) {
 	t.Run("successfully create HealthChecker handler", func(t *testing.T) {
-		hdr := builder.BuildGRPCHealthChecker()
+		rds := &redis.Client{}
+		db := &sql.DB{}
+		hdr := builder.BuildGRPCHealthChecker(db, rds)
 		assert.NotNil(t, hdr)
 	})
 }
