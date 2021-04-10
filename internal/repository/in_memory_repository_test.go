@@ -1,7 +1,6 @@
 package repository_test
 
 import (
-	"context"
 	"fmt"
 	"testing"
 	"time"
@@ -13,8 +12,7 @@ import (
 )
 
 var (
-	testContext = context.Background()
-	testCodes   = []string{"ABCdef12", "xyzJKL34", "asdQWE56"}
+	testCodes = []string{"ABCdef12", "xyzJKL34", "asdQWE56"}
 )
 
 func TestNewInMemoryURLRepository(t *testing.T) {
