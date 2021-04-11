@@ -4,16 +4,14 @@ import (
 	"database/sql"
 	"testing"
 
-	"google.golang.org/grpc"
-
-	"github.com/indrasaputra/url-shortener/internal/http2/grpc/handler"
-
 	"github.com/alicebob/miniredis/v2"
 	"github.com/go-redis/redis/v8"
 	"github.com/stretchr/testify/assert"
+	"google.golang.org/grpc"
 
 	"github.com/indrasaputra/url-shortener/internal/builder"
 	"github.com/indrasaputra/url-shortener/internal/config"
+	"github.com/indrasaputra/url-shortener/internal/http2/grpc/handler"
 )
 
 func TestBuildRedisClient(t *testing.T) {
@@ -97,14 +95,14 @@ func TestBuildGRPCServer(t *testing.T) {
 
 func TestBuildRestServer(t *testing.T) {
 	t.Run("fail build REST server due to transport security setting", func(t *testing.T) {
-		srv, err := builder.BuildRestServer("8081")
+		srv, err := builder.BuildRestServer("8081", "8080")
 
 		assert.NotNil(t, err)
 		assert.Nil(t, srv)
 	})
 
 	t.Run("successfully build REST server", func(t *testing.T) {
-		srv, err := builder.BuildRestServer("8081", grpc.WithInsecure())
+		srv, err := builder.BuildRestServer("8081", "8080", grpc.WithInsecure())
 
 		assert.Nil(t, err)
 		assert.NotNil(t, srv)
