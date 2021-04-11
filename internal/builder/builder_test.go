@@ -1,11 +1,11 @@
 package builder_test
 
 import (
-	"database/sql"
 	"testing"
 
 	"github.com/alicebob/miniredis/v2"
 	"github.com/go-redis/redis/v8"
+	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/grpc"
 
@@ -44,37 +44,30 @@ func TestBuildRedisClient(t *testing.T) {
 	})
 }
 
-func TestBuildSQLClient(t *testing.T) {
+func TestBuildPostgresConnPool(t *testing.T) {
 	cfg := config.Postgres{
-		Host:         "localhost",
-		Port:         "5432",
-		DBName:       "url_shortener",
-		User:         "user",
-		Password:     "password",
-		MaxOpenConns: 10,
-		MaxIdleConns: 10,
+		Host:            "localhost",
+		Port:            "5432",
+		DBName:          "url_shortener",
+		User:            "user",
+		Password:        "password",
+		MaxOpenConns:    10,
+		MaxConnLifetime: "10q",
 	}
 
 	t.Run("fail build sql client", func(t *testing.T) {
-		client, err := builder.BuildSQLClient(cfg, "sql")
+		client, err := builder.BuildPostgresConnPool(cfg)
 
 		assert.NotNil(t, err)
 		assert.Nil(t, client)
-	})
-
-	t.Run("success build sql client", func(t *testing.T) {
-		client, err := builder.BuildSQLClient(cfg, "postgres")
-
-		assert.Nil(t, err)
-		assert.NotNil(t, client)
 	})
 }
 
 func TestBuildGRPCURLShortener(t *testing.T) {
 	t.Run("successfully build URLShortener handler", func(t *testing.T) {
 		rds := &redis.Client{}
-		db := &sql.DB{}
-		hdr := builder.BuildGRPCURLShortener(db, rds, "http://short-url.com")
+		pool := &pgxpool.Pool{}
+		hdr := builder.BuildGRPCURLShortener(pool, rds, "http://short-url.com")
 		assert.NotNil(t, hdr)
 	})
 }
@@ -82,8 +75,8 @@ func TestBuildGRPCURLShortener(t *testing.T) {
 func TestBuildGRPCHealthChecker(t *testing.T) {
 	t.Run("successfully build HealthChecker handler", func(t *testing.T) {
 		rds := &redis.Client{}
-		db := &sql.DB{}
-		hdr := builder.BuildGRPCHealthChecker(db, rds)
+		pool := &pgxpool.Pool{}
+		hdr := builder.BuildGRPCHealthChecker(pool, rds)
 		assert.NotNil(t, hdr)
 	})
 }
