@@ -4,6 +4,10 @@ import (
 	"database/sql"
 	"testing"
 
+	"google.golang.org/grpc"
+
+	"github.com/indrasaputra/url-shortener/internal/http2/grpc/handler"
+
 	"github.com/alicebob/miniredis/v2"
 	"github.com/go-redis/redis/v8"
 	"github.com/stretchr/testify/assert"
@@ -62,7 +66,7 @@ func TestBuildPostgresClient(t *testing.T) {
 }
 
 func TestBuildGRPCURLShortener(t *testing.T) {
-	t.Run("successfully create URLShortener handler", func(t *testing.T) {
+	t.Run("successfully build URLShortener handler", func(t *testing.T) {
 		rds := &redis.Client{}
 		db := &sql.DB{}
 		hdr := builder.BuildGRPCURLShortener(db, rds, "http://short-url.com")
@@ -71,10 +75,38 @@ func TestBuildGRPCURLShortener(t *testing.T) {
 }
 
 func TestBuildGRPCHealthChecker(t *testing.T) {
-	t.Run("successfully create HealthChecker handler", func(t *testing.T) {
+	t.Run("successfully build HealthChecker handler", func(t *testing.T) {
 		rds := &redis.Client{}
 		db := &sql.DB{}
 		hdr := builder.BuildGRPCHealthChecker(db, rds)
 		assert.NotNil(t, hdr)
+	})
+}
+
+func TestBuildGRPCServer(t *testing.T) {
+	t.Run("successfully build gRPC server", func(t *testing.T) {
+		shortener := &handler.URLShortener{}
+		health := &handler.HealthChecker{}
+
+		srv, err := builder.BuildGRPCServer("8080", shortener, health)
+
+		assert.Nil(t, err)
+		assert.NotNil(t, srv)
+	})
+}
+
+func TestBuildRestServer(t *testing.T) {
+	t.Run("fail build REST server due to transport security setting", func(t *testing.T) {
+		srv, err := builder.BuildRestServer("8081")
+
+		assert.NotNil(t, err)
+		assert.Nil(t, srv)
+	})
+
+	t.Run("successfully build REST server", func(t *testing.T) {
+		srv, err := builder.BuildRestServer("8081", grpc.WithInsecure())
+
+		assert.Nil(t, err)
+		assert.NotNil(t, srv)
 	})
 }

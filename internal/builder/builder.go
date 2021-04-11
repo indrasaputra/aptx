@@ -9,6 +9,7 @@ import (
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	grpc_zap "github.com/grpc-ecosystem/go-grpc-middleware/logging/zap"
 	grpc_prometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
+	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	_ "github.com/lib/pq" // for postgres
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
@@ -96,7 +97,7 @@ func BuildGRPCHealthChecker(db *sql.DB, rds redis.Cmdable) *handler.HealthChecke
 // BuildGRPCServer builds gRPC server along with all services that needs it.
 // For this project, the services are URL Shortener and Health Checker.
 // It also sets the Prometheus and Zap Logger.
-func BuildGRPCServer(port string, shortener *handler.URLShortener, health *handler.HealthChecker) (*server.GRPC, error) {
+func BuildGRPCServer(port string, shortener *handler.URLShortener, health *handler.HealthChecker, options ...grpc.ServerOption) (*server.GRPC, error) {
 	logger, err := zap.NewProduction()
 	if err != nil {
 		return nil, err
@@ -104,12 +105,11 @@ func BuildGRPCServer(port string, shortener *handler.URLShortener, health *handl
 
 	grpc_zap.ReplaceGrpcLoggerV2(logger)
 
-	grpcServer := server.NewGRPC(port,
-		grpc_middleware.WithUnaryServerChain(
-			grpc_zap.UnaryServerInterceptor(logger),
-			grpc_prometheus.UnaryServerInterceptor,
-		),
-	)
+	options = append(options, grpc_middleware.WithUnaryServerChain(
+		grpc_zap.UnaryServerInterceptor(logger),
+		grpc_prometheus.UnaryServerInterceptor,
+	))
+	grpcServer := server.NewGRPC(port, options...)
 	grpcServer.RegisterServices(
 		registerGRPCPrometheus(),
 		registerGRPCURLShortenerService(shortener),
@@ -117,6 +117,24 @@ func BuildGRPCServer(port string, shortener *handler.URLShortener, health *handl
 	)
 
 	return grpcServer, nil
+}
+
+// BuildRestServer builds REST server along with all services that needs it.
+// For this project, there is only one service: URL Shortener.
+// Health Checker service is not included because it will only run on gRPC port.
+// It also sets the Prometheus endpoint in /metrics.
+func BuildRestServer(port string, options ...grpc.DialOption) (*server.Rest, error) {
+	restServer := server.NewRest(port)
+	if err := restServer.EnablePrometheus(); err != nil {
+		return nil, err
+	}
+	err := restServer.RegisterEndpoints(
+		registerRestURLShortenerEndpoint(port, options...),
+	)
+	if err != nil {
+		return nil, err
+	}
+	return restServer, nil
 }
 
 func registerGRPCPrometheus() server.RegisterServiceFunc {
@@ -135,5 +153,11 @@ func registerGRPCURLShortenerService(shortener *handler.URLShortener) server.Reg
 func registerGRPCHealthService(health *handler.HealthChecker) server.RegisterServiceFunc {
 	return func(server *grpc.Server) {
 		grpc_health_v1.RegisterHealthServer(server, health)
+	}
+}
+
+func registerRestURLShortenerEndpoint(grpcPort string, options ...grpc.DialOption) server.RegisterEndpointFunc {
+	return func(server *runtime.ServeMux) error {
+		return shortenerv1.RegisterURLShortenerServiceHandlerFromEndpoint(context.Background(), server, fmt.Sprintf(":%s", grpcPort), options)
 	}
 }
