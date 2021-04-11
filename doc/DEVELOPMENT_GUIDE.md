@@ -49,6 +49,8 @@
     $ git push origin <your-meaningful-branch>
     ```
 
+    For writing commit message, please use [conventionalcommits](https://www.conventionalcommits.org/en/v1.0.0/) as a reference.
+
 - Create a Pull Request (PR). In your PR's description, please explain the goal of the PR and its changes.
 
 - Ask the other contributors to review.
