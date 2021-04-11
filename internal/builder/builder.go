@@ -2,7 +2,6 @@ package builder
 
 import (
 	"context"
-	"database/sql"
 	"fmt"
 
 	"github.com/go-redis/redis/v8"
@@ -10,7 +9,7 @@ import (
 	grpc_zap "github.com/grpc-ecosystem/go-grpc-middleware/logging/zap"
 	grpc_prometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
-	_ "github.com/lib/pq" // for postgres
+	"github.com/jackc/pgx/v4/pgxpool"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/health/grpc_health_v1"
@@ -42,31 +41,25 @@ func BuildRedisClient(cfg config.Redis) (*redis.Client, error) {
 	return client, nil
 }
 
-// BuildSQLClient builds a SQL client.
-func BuildSQLClient(cfg config.Postgres, driver string) (*sql.DB, error) {
-	sqlCfg := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
+// BuildPostgresConnPool builds a SQL client.
+func BuildPostgresConnPool(cfg config.Postgres) (*pgxpool.Pool, error) {
+	connCfg := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable pool_max_conns=%d pool_max_conn_lifetime=%s",
 		cfg.Host,
 		cfg.Port,
 		cfg.User,
 		cfg.Password,
 		cfg.DBName,
+		cfg.MaxOpenConns,
+		cfg.MaxConnLifetime,
 	)
 
-	db, err := sql.Open(driver, sqlCfg)
-	if err != nil {
-		return nil, err
-	}
-
-	db.SetMaxOpenConns(cfg.MaxOpenConns)
-	db.SetMaxIdleConns(cfg.MaxIdleConns)
-
-	return db, nil
+	return pgxpool.Connect(context.Background(), connCfg)
 }
 
 // BuildGRPCURLShortener builds URLShortener handler together with all of its dependencies.
-func BuildGRPCURLShortener(db *sql.DB, rds redis.Cmdable, domain string) *handler.URLShortener {
+func BuildGRPCURLShortener(pool *pgxpool.Pool, rds redis.Cmdable, domain string) *handler.URLShortener {
 	redis := cache.NewURLRedis(rds)
-	postgres := database.NewURLPostgres(db)
+	postgres := database.NewURLPostgres(pool)
 
 	repoInserter := repository.NewURLInserter(postgres, redis)
 	repoGetter := repository.NewURLGetter(postgres, redis)
@@ -80,9 +73,9 @@ func BuildGRPCURLShortener(db *sql.DB, rds redis.Cmdable, domain string) *handle
 }
 
 // BuildGRPCHealthChecker builds HealthChecker handler together with all of its dependencies.
-func BuildGRPCHealthChecker(db *sql.DB, rds redis.Cmdable) *handler.HealthChecker {
+func BuildGRPCHealthChecker(pool *pgxpool.Pool, rds redis.Cmdable) *handler.HealthChecker {
 	redis := cache.NewURLRedis(rds)
-	postgres := database.NewURLPostgres(db)
+	postgres := database.NewURLPostgres(pool)
 
 	repo := repository.NewHealthChecker(postgres, redis)
 
