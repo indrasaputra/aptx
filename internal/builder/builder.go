@@ -6,14 +6,22 @@ import (
 	"fmt"
 
 	"github.com/go-redis/redis/v8"
-	_ "github.com/lib/pq" // for posgres
+	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
+	grpc_zap "github.com/grpc-ecosystem/go-grpc-middleware/logging/zap"
+	grpc_prometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
+	_ "github.com/lib/pq" // for postgres
+	"go.uber.org/zap"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/health/grpc_health_v1"
 
 	"github.com/indrasaputra/url-shortener/internal/config"
 	"github.com/indrasaputra/url-shortener/internal/http2/grpc/handler"
+	"github.com/indrasaputra/url-shortener/internal/http2/grpc/server"
 	"github.com/indrasaputra/url-shortener/internal/repository"
 	"github.com/indrasaputra/url-shortener/internal/repository/cache"
 	"github.com/indrasaputra/url-shortener/internal/repository/database"
 	"github.com/indrasaputra/url-shortener/internal/tool"
+	shortenerv1 "github.com/indrasaputra/url-shortener/proto/indrasaputra/shortener/v1"
 	"github.com/indrasaputra/url-shortener/usecase"
 )
 
@@ -83,4 +91,49 @@ func BuildGRPCHealthChecker(db *sql.DB, rds redis.Cmdable) *handler.HealthChecke
 
 	checker := usecase.NewHealthChecker(repo)
 	return handler.NewHealthChecker(checker)
+}
+
+// BuildGRPCServer builds gRPC server along with all services that needs it.
+// For this project, the services are URL Shortener and Health Checker.
+// It also sets the Prometheus and Zap Logger.
+func BuildGRPCServer(port string, shortener *handler.URLShortener, health *handler.HealthChecker) (*server.GRPC, error) {
+	logger, err := zap.NewProduction()
+	if err != nil {
+		return nil, err
+	}
+
+	grpc_zap.ReplaceGrpcLoggerV2(logger)
+
+	grpcServer := server.NewGRPC(port,
+		grpc_middleware.WithUnaryServerChain(
+			grpc_zap.UnaryServerInterceptor(logger),
+			grpc_prometheus.UnaryServerInterceptor,
+		),
+	)
+	grpcServer.RegisterServices(
+		registerGRPCPrometheus(),
+		registerGRPCURLShortenerService(shortener),
+		registerGRPCHealthService(health),
+	)
+
+	return grpcServer, nil
+}
+
+func registerGRPCPrometheus() server.RegisterServiceFunc {
+	return func(server *grpc.Server) {
+		grpc_prometheus.EnableHandlingTimeHistogram()
+		grpc_prometheus.Register(server)
+	}
+}
+
+func registerGRPCURLShortenerService(shortener *handler.URLShortener) server.RegisterServiceFunc {
+	return func(server *grpc.Server) {
+		shortenerv1.RegisterURLShortenerServiceServer(server, shortener)
+	}
+}
+
+func registerGRPCHealthService(health *handler.HealthChecker) server.RegisterServiceFunc {
+	return func(server *grpc.Server) {
+		grpc_health_v1.RegisterHealthServer(server, health)
+	}
 }

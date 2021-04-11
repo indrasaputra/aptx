@@ -4,11 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
-	grpc_zap "github.com/grpc-ecosystem/go-grpc-middleware/logging/zap"
 	grpc_prometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
-	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/health/grpc_health_v1"
 
@@ -31,21 +28,8 @@ func main() {
 	shortener := builder.BuildGRPCURLShortener(postgres, redis, cfg.Domain)
 	health := builder.BuildGRPCHealthChecker(postgres, redis)
 
-	logger, zerr := zap.NewProduction()
-	checkError(zerr)
-	grpc_zap.ReplaceGrpcLoggerV2(logger)
-
-	grpcServer := server.NewGRPC(cfg.PortGRPC,
-		grpc_middleware.WithUnaryServerChain(
-			grpc_zap.UnaryServerInterceptor(logger),
-			grpc_prometheus.UnaryServerInterceptor,
-		),
-	)
-	grpcServer.RegisterServices(
-		registerGRPCPrometheus(),
-		registerGRPCURLShortenerService(shortener),
-		registerGRPCHealthService(health),
-	)
+	grpcServer, gerr := builder.BuildGRPCServer(cfg.PortGRPC, shortener, health)
+	checkError(gerr)
 	_ = grpcServer.Run()
 
 	restServer := server.NewRest(cfg.PortHTTP)
