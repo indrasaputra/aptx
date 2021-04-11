@@ -7,11 +7,15 @@ import (
 	"github.com/indrasaputra/url-shortener/internal/config"
 )
 
+const (
+	dbDriver = "postgres"
+)
+
 func main() {
 	cfg, cerr := config.NewConfig(".env")
 	checkError(cerr)
 
-	postgres, perr := builder.BuildPostgresClient(cfg.Postgres)
+	postgres, perr := builder.BuildSQLClient(cfg.Postgres, dbDriver)
 	checkError(perr)
 	redis, rerr := builder.BuildRedisClient(cfg.Redis)
 	checkError(rerr)

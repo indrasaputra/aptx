@@ -44,19 +44,26 @@ func TestBuildRedisClient(t *testing.T) {
 	})
 }
 
-func TestBuildPostgresClient(t *testing.T) {
-	t.Run("success build db client", func(t *testing.T) {
-		cfg := config.Postgres{
-			Host:         "localhost",
-			Port:         "5432",
-			DBName:       "url_shortener",
-			User:         "user",
-			Password:     "password",
-			MaxOpenConns: 10,
-			MaxIdleConns: 10,
-		}
+func TestBuildSQLClient(t *testing.T) {
+	cfg := config.Postgres{
+		Host:         "localhost",
+		Port:         "5432",
+		DBName:       "url_shortener",
+		User:         "user",
+		Password:     "password",
+		MaxOpenConns: 10,
+		MaxIdleConns: 10,
+	}
 
-		client, err := builder.BuildPostgresClient(cfg)
+	t.Run("fail build sql client", func(t *testing.T) {
+		client, err := builder.BuildSQLClient(cfg, "sql")
+
+		assert.NotNil(t, err)
+		assert.Nil(t, client)
+	})
+
+	t.Run("success build sql client", func(t *testing.T) {
+		client, err := builder.BuildSQLClient(cfg, "postgres")
 
 		assert.Nil(t, err)
 		assert.NotNil(t, client)
