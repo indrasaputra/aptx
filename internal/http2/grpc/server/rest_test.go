@@ -1,6 +1,7 @@
 package server_test
 
 import (
+	"errors"
 	"testing"
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
@@ -31,7 +32,19 @@ func TestRest_EnablePrometheus(t *testing.T) {
 func TestRest_RegisterEndpoints(t *testing.T) {
 	t.Run("success register endpoint", func(t *testing.T) {
 		srv := server.NewRest(testRestPort)
-		fn := func(server *runtime.ServeMux) {}
-		assert.NotPanics(t, func() { srv.RegisterEndpoints(fn) })
+		fn := func(server *runtime.ServeMux) error { return errors.New("endpoint doesn't exist") }
+
+		err := srv.RegisterEndpoints(fn)
+
+		assert.NotNil(t, err)
+	})
+
+	t.Run("success register endpoint", func(t *testing.T) {
+		srv := server.NewRest(testRestPort)
+		fn := func(server *runtime.ServeMux) error { return nil }
+
+		err := srv.RegisterEndpoints(fn)
+
+		assert.Nil(t, err)
 	})
 }
