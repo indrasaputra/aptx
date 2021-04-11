@@ -15,13 +15,13 @@ type Redis struct {
 
 // Postgres holds configuration for PostgreSQL.
 type Postgres struct {
-	Host         string `env:"POSTGRES_HOST,required"`
-	Port         string `env:"POSTGRES_PORT,required"`
-	DBName       string `env:"POSTGRES_DBNAME,required"`
-	User         string `env:"POSTGRES_USER,required"`
-	Password     string `env:"POSTGRES_PASSWORD,required"`
-	MaxOpenConns int    `env:"POSTGRES_MAX_OPEN_CONNS,required"`
-	MaxIdleConns int    `env:"POSTGRES_MAX_IDLE_CONNS,required"`
+	Host            string `env:"POSTGRES_HOST,required"`
+	Port            string `env:"POSTGRES_PORT,required"`
+	DBName          string `env:"POSTGRES_DBNAME,required"`
+	User            string `env:"POSTGRES_USER,required"`
+	Password        string `env:"POSTGRES_PASSWORD,required"`
+	MaxOpenConns    int    `env:"POSTGRES_MAX_OPEN_CONNS,required"`
+	MaxConnLifetime string `env:"POSTGRES_MAX_CONN_LIFETIME,required"`
 }
 
 // Config holds configuration for the project.
