@@ -123,13 +123,13 @@ func BuildGRPCServer(port string, shortener *handler.URLShortener, health *handl
 // For this project, there is only one service: URL Shortener.
 // Health Checker service is not included because it will only run on gRPC port.
 // It also sets the Prometheus endpoint in /metrics.
-func BuildRestServer(port string, options ...grpc.DialOption) (*server.Rest, error) {
-	restServer := server.NewRest(port)
+func BuildRestServer(restPort, grpcPort string, options ...grpc.DialOption) (*server.Rest, error) {
+	restServer := server.NewRest(restPort)
 	if err := restServer.EnablePrometheus(); err != nil {
 		return nil, err
 	}
 	err := restServer.RegisterEndpoints(
-		registerRestURLShortenerEndpoint(port, options...),
+		registerRestURLShortenerEndpoint(grpcPort, options...),
 	)
 	if err != nil {
 		return nil, err
