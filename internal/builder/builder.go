@@ -26,10 +26,6 @@ import (
 	"github.com/indrasaputra/url-shortener/usecase"
 )
 
-const (
-	dbDriver = "postgres"
-)
-
 // BuildRedisClient builds a redis client.
 func BuildRedisClient(cfg config.Redis) (*redis.Client, error) {
 	opt := &redis.Options{
@@ -46,8 +42,8 @@ func BuildRedisClient(cfg config.Redis) (*redis.Client, error) {
 	return client, nil
 }
 
-// BuildPostgresClient builds a postgres client.
-func BuildPostgresClient(cfg config.Postgres) (*sql.DB, error) {
+// BuildSQLClient builds a SQL client.
+func BuildSQLClient(cfg config.Postgres, driver string) (*sql.DB, error) {
 	sqlCfg := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
 		cfg.Host,
 		cfg.Port,
@@ -56,7 +52,7 @@ func BuildPostgresClient(cfg config.Postgres) (*sql.DB, error) {
 		cfg.DBName,
 	)
 
-	db, err := sql.Open(dbDriver, sqlCfg)
+	db, err := sql.Open(driver, sqlCfg)
 	if err != nil {
 		return nil, err
 	}
