@@ -9,7 +9,7 @@ import (
 )
 
 // RegisterEndpointFunc defines function contract to register endpoint.
-type RegisterEndpointFunc func(server *runtime.ServeMux)
+type RegisterEndpointFunc func(server *runtime.ServeMux) error
 
 // Rest is responsible to act as HTTP/1.1 REST server.
 // It composes grpc-gateway runtime.ServeMux.
@@ -33,10 +33,14 @@ func (r *Rest) EnablePrometheus() error {
 }
 
 // RegisterEndpoints registers HTTP/1.1 REST endpoints.
-func (r *Rest) RegisterEndpoints(fns ...RegisterEndpointFunc) {
+// If there are some errors, it returns the first error it encounter and stop the iteration.
+func (r *Rest) RegisterEndpoints(fns ...RegisterEndpointFunc) error {
 	for _, fn := range fns {
-		fn(r.ServeMux)
+		if err := fn(r.ServeMux); err != nil {
+			return err
+		}
 	}
+	return nil
 }
 
 // Run runs HTTP/1.1 runtime.ServeMux.
