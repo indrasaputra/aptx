@@ -17,27 +17,27 @@ var (
 	testHealthCheckRequest = &grpchealthv1.HealthCheckRequest{Service: "aptx"}
 )
 
-type HealthCheckerExecutor struct {
-	handler *handler.HealthChecker
+type HealthServiceExecutor struct {
+	handler *handler.HealthService
 	checker *mock_usecase.MockCheckHealth
 }
 
-func TestNewHealthChecker(t *testing.T) {
+func TestNewHealthService(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	t.Run("successful create an instance of HealthChecker", func(t *testing.T) {
-		exec := createHealthCheckerExecutor(ctrl)
+	t.Run("successful create an instance of HealthService", func(t *testing.T) {
+		exec := createHealthServiceExecutor(ctrl)
 		assert.NotNil(t, exec.handler)
 	})
 }
 
-func TestHealthChecker_Check(t *testing.T) {
+func TestHealthService_Check(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
 	t.Run("nil request is prohibited", func(t *testing.T) {
-		exec := createHealthCheckerExecutor(ctrl)
+		exec := createHealthServiceExecutor(ctrl)
 
 		resp, err := exec.handler.Check(testContext, nil)
 
@@ -46,7 +46,7 @@ func TestHealthChecker_Check(t *testing.T) {
 	})
 
 	t.Run("system is not healthy", func(t *testing.T) {
-		exec := createHealthCheckerExecutor(ctrl)
+		exec := createHealthServiceExecutor(ctrl)
 		exec.checker.EXPECT().Check(testContext).Return(entity.ErrInternal("system is sleeping"))
 
 		resp, err := exec.handler.Check(testContext, testHealthCheckRequest)
@@ -56,7 +56,7 @@ func TestHealthChecker_Check(t *testing.T) {
 	})
 
 	t.Run("system is healthy", func(t *testing.T) {
-		exec := createHealthCheckerExecutor(ctrl)
+		exec := createHealthServiceExecutor(ctrl)
 		exec.checker.EXPECT().Check(testContext).Return(nil)
 
 		resp, err := exec.handler.Check(testContext, testHealthCheckRequest)
@@ -66,10 +66,10 @@ func TestHealthChecker_Check(t *testing.T) {
 	})
 }
 
-func createHealthCheckerExecutor(ctrl *gomock.Controller) *HealthCheckerExecutor {
+func createHealthServiceExecutor(ctrl *gomock.Controller) *HealthServiceExecutor {
 	c := mock_usecase.NewMockCheckHealth(ctrl)
-	h := handler.NewHealthChecker(c)
-	return &HealthCheckerExecutor{
+	h := handler.NewHealthService(c)
+	return &HealthServiceExecutor{
 		handler: h,
 		checker: c,
 	}

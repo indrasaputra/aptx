@@ -63,28 +63,28 @@ func TestBuildPostgresConnPool(t *testing.T) {
 	})
 }
 
-func TestBuildGRPCURLShortener(t *testing.T) {
-	t.Run("successfully build URLShortener handler", func(t *testing.T) {
+func TestBuildGRPCAptxService(t *testing.T) {
+	t.Run("successfully build AptxService handler", func(t *testing.T) {
 		rds := &redis.Client{}
 		pool := &pgxpool.Pool{}
-		hdr := builder.BuildGRPCURLShortener(pool, rds, "http://short-url.com")
+		hdr := builder.BuildGRPCAptxService(pool, rds, "http://short-url.com")
 		assert.NotNil(t, hdr)
 	})
 }
 
-func TestBuildGRPCHealthChecker(t *testing.T) {
-	t.Run("successfully build HealthChecker handler", func(t *testing.T) {
+func TestBuildGRPCHealthService(t *testing.T) {
+	t.Run("successfully build HealthService handler", func(t *testing.T) {
 		rds := &redis.Client{}
 		pool := &pgxpool.Pool{}
-		hdr := builder.BuildGRPCHealthChecker(pool, rds)
+		hdr := builder.BuildGRPCHealthService(pool, rds)
 		assert.NotNil(t, hdr)
 	})
 }
 
 func TestBuildGRPCServer(t *testing.T) {
 	t.Run("successfully build gRPC server", func(t *testing.T) {
-		aptx := &handler.URLShortener{}
-		health := &handler.HealthChecker{}
+		aptx := &handler.AptxService{}
+		health := &handler.HealthService{}
 
 		srv, err := builder.BuildGRPCServer("8080", aptx, health)
 

@@ -16,8 +16,8 @@ func main() {
 	redis, rerr := builder.BuildRedisClient(cfg.Redis)
 	checkError(rerr)
 
-	aptx := builder.BuildGRPCURLShortener(postgres, redis, cfg.Domain)
-	health := builder.BuildGRPCHealthChecker(postgres, redis)
+	aptx := builder.BuildGRPCAptxService(postgres, redis, cfg.Domain)
+	health := builder.BuildGRPCHealthService(postgres, redis)
 
 	grpcServer, gerr := builder.BuildGRPCServer(cfg.PortGRPC, aptx, health)
 	checkError(gerr)

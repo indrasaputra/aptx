@@ -10,19 +10,19 @@ import (
 	"github.com/indrasaputra/aptx/usecase"
 )
 
-// HealthChecker handles HTTP/2 gRPC request for health checking.
-type HealthChecker struct {
+// HealthService handles HTTP/2 gRPC request for health checking.
+type HealthService struct {
 	grpchealthv1.UnimplementedHealthServer
 	checker usecase.CheckHealth
 }
 
-// NewHealthChecker creates an instance of HealthChecker.
-func NewHealthChecker(checker usecase.CheckHealth) *HealthChecker {
-	return &HealthChecker{checker: checker}
+// NewHealthService creates an instance of HealthService.
+func NewHealthService(checker usecase.CheckHealth) *HealthService {
+	return &HealthService{checker: checker}
 }
 
 // Check checks the entire system health, including its dependecies.
-func (hc *HealthChecker) Check(ctx context.Context, request *grpchealthv1.HealthCheckRequest) (*grpchealthv1.HealthCheckResponse, error) {
+func (hc *HealthService) Check(ctx context.Context, request *grpchealthv1.HealthCheckRequest) (*grpchealthv1.HealthCheckResponse, error) {
 	if request == nil {
 		st := status.New(codes.InvalidArgument, "health check request is nil")
 		return createHealthCheckResponse(grpchealthv1.HealthCheckResponse_UNKNOWN), st.Err()

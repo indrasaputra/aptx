@@ -20,7 +20,7 @@ func main() {
 	checkError(err)
 	defer conn.Close()
 
-	aptx := aptxv1.NewURLShortenerServiceClient(conn)
+	aptx := aptxv1.NewAptxServiceClient(conn)
 	fmt.Println("start send...")
 	send(aptx)
 	fmt.Printf("end send\n\n")
@@ -32,7 +32,7 @@ func main() {
 	fmt.Printf("end get detail\n\n")
 }
 
-func send(aptx aptxv1.URLShortenerServiceClient) {
+func send(aptx aptxv1.AptxServiceClient) {
 	urls := []string{
 		"http://this-is-a-very-long-url-1.url",
 		"http://this-is-a-very-long-url-2.url",
@@ -40,8 +40,8 @@ func send(aptx aptxv1.URLShortenerServiceClient) {
 	}
 
 	for _, url := range urls {
-		req := &aptxv1.CreateShortURLRequest{OriginalUrl: url}
-		resp, err := aptx.CreateShortURL(context.Background(), req)
+		req := &aptxv1.ShortenURLRequest{OriginalUrl: url}
+		resp, err := aptx.ShortenURL(context.Background(), req)
 		if err != nil {
 			log.Printf("create short url: %v", err)
 			return
@@ -50,7 +50,7 @@ func send(aptx aptxv1.URLShortenerServiceClient) {
 	}
 }
 
-func streamAll(aptx aptxv1.URLShortenerServiceClient) {
+func streamAll(aptx aptxv1.AptxServiceClient) {
 	stream, err := aptx.StreamAllURL(context.Background(), &aptxv1.StreamAllURLRequest{})
 	if err != nil {
 		log.Printf("stream all: %v\n", err)
@@ -70,7 +70,7 @@ func streamAll(aptx aptxv1.URLShortenerServiceClient) {
 	}
 }
 
-func getDetail(aptx aptxv1.URLShortenerServiceClient) {
+func getDetail(aptx aptxv1.AptxServiceClient) {
 	resp, err := aptx.GetAllURL(context.Background(), &aptxv1.GetAllURLRequest{})
 	if err != nil {
 		log.Printf("get first detail: %v\n", err)

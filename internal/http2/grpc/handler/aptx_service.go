@@ -10,43 +10,44 @@ import (
 	"github.com/indrasaputra/aptx/usecase"
 )
 
-// URLShortener handles HTTP/2 gRPC request for URL aptx.
-type URLShortener struct {
-	aptxv1.UnimplementedURLShortenerServiceServer
+// AptxService handles HTTP/2 gRPC request for URL aptx.
+// It implements gRPC service server.
+type AptxService struct {
+	aptxv1.UnimplementedAptxServiceServer
 	creator usecase.CreateShortURL
 	getter  usecase.GetURL
 }
 
-// NewURLShortener creates an instance of URLShortener.
-func NewURLShortener(creator usecase.CreateShortURL, getter usecase.GetURL) *URLShortener {
-	return &URLShortener{
+// NewAptxService creates an instance of AptxService.
+func NewAptxService(creator usecase.CreateShortURL, getter usecase.GetURL) *AptxService {
+	return &AptxService{
 		creator: creator,
 		getter:  getter,
 	}
 }
 
-// CreateShortURL handles HTTP/2 gRPC request similar to POST in HTTP/1.1.
-func (us *URLShortener) CreateShortURL(ctx context.Context, request *aptxv1.CreateShortURLRequest) (*aptxv1.CreateShortURLResponse, error) {
+// ShortenURL handles HTTP/2 gRPC request similar to POST in HTTP/1.1.
+func (as *AptxService) ShortenURL(ctx context.Context, request *aptxv1.ShortenURLRequest) (*aptxv1.ShortenURLResponse, error) {
 	if request == nil {
 		return nil, entity.ErrEmptyURL()
 	}
 
-	url, cerr := us.creator.Create(ctx, request.GetOriginalUrl())
+	url, cerr := as.creator.Create(ctx, request.GetOriginalUrl())
 	if cerr != nil {
 		return nil, cerr
 	}
 
-	return createCreateShortURLResponseFromEntity(url), nil
+	return createShortenURLResponseFromEntity(url), nil
 }
 
 // GetAllURL handles HTTP/2 gRPC request similar to GET in HTTP/1.1.
 // Its specific job is to get all available URLs in the system.
-func (us *URLShortener) GetAllURL(ctx context.Context, request *aptxv1.GetAllURLRequest) (*aptxv1.GetAllURLResponse, error) {
+func (as *AptxService) GetAllURL(ctx context.Context, request *aptxv1.GetAllURLRequest) (*aptxv1.GetAllURLResponse, error) {
 	if request == nil {
 		return nil, entity.ErrEmptyURL()
 	}
 
-	urls, err := us.getter.GetAll(context.Background())
+	urls, err := as.getter.GetAll(context.Background())
 	if err != nil {
 		return nil, err
 	}
@@ -56,8 +57,8 @@ func (us *URLShortener) GetAllURL(ctx context.Context, request *aptxv1.GetAllURL
 
 // StreamAllURL handles HTTP/2 gRPC request similar to GET in HTTP/1.1.
 // Its specific job is to get all available URLs in the system using stream.
-func (us *URLShortener) StreamAllURL(request *aptxv1.StreamAllURLRequest, stream aptxv1.URLShortenerService_StreamAllURLServer) error {
-	urls, err := us.getter.GetAll(stream.Context())
+func (as *AptxService) StreamAllURL(request *aptxv1.StreamAllURLRequest, stream aptxv1.AptxService_StreamAllURLServer) error {
+	urls, err := as.getter.GetAll(stream.Context())
 	if err != nil {
 		return err
 	}
@@ -73,20 +74,20 @@ func (us *URLShortener) StreamAllURL(request *aptxv1.StreamAllURLRequest, stream
 
 // GetURLDetail handles HTTP/2 gRPC request similar to GET in HTTP/1.1.
 // Its specific job is to get a detail of a single short URL.
-func (us *URLShortener) GetURLDetail(ctx context.Context, request *aptxv1.GetURLDetailRequest) (*aptxv1.GetURLDetailResponse, error) {
+func (as *AptxService) GetURLDetail(ctx context.Context, request *aptxv1.GetURLDetailRequest) (*aptxv1.GetURLDetailResponse, error) {
 	if request == nil {
 		return nil, entity.ErrEmptyURL()
 	}
 
-	url, err := us.getter.GetByCode(ctx, request.GetCode())
+	url, err := as.getter.GetByCode(ctx, request.GetCode())
 	if err != nil {
 		return nil, err
 	}
 	return createGetURLDetailResponseFromEntity(url), nil
 }
 
-func createCreateShortURLResponseFromEntity(url *entity.URL) *aptxv1.CreateShortURLResponse {
-	return &aptxv1.CreateShortURLResponse{
+func createShortenURLResponseFromEntity(url *entity.URL) *aptxv1.ShortenURLResponse {
+	return &aptxv1.ShortenURLResponse{
 		Url: createShortenerV1URL(url),
 	}
 }
