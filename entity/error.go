@@ -12,8 +12,8 @@ import (
 // It explains that unexpected behavior occurred in system.
 func ErrInternal(message string) error {
 	st := status.New(codes.Internal, message)
-	se := &aptxv1.URLShortenerError{
-		ErrorCode: aptxv1.URLShortenerErrorCode_INTERNAL,
+	se := &aptxv1.AptxError{
+		ErrorCode: aptxv1.AptxErrorCode_INTERNAL,
 	}
 	res, err := st.WithDetails(se)
 	if err != nil {
@@ -31,8 +31,8 @@ func ErrEmptyURL() error {
 		Description: "empty or nil",
 	})
 
-	se := &aptxv1.URLShortenerError{
-		ErrorCode: aptxv1.URLShortenerErrorCode_EMPTY_URL,
+	se := &aptxv1.AptxError{
+		ErrorCode: aptxv1.AptxErrorCode_EMPTY_URL,
 	}
 	res, err := st.WithDetails(br, se)
 	if err != nil {
@@ -45,8 +45,8 @@ func ErrEmptyURL() error {
 // It explains that the code / short URL already exists.
 func ErrAlreadyExists() error {
 	st := status.New(codes.AlreadyExists, "")
-	se := &aptxv1.URLShortenerError{
-		ErrorCode: aptxv1.URLShortenerErrorCode_ALREADY_EXISTS,
+	se := &aptxv1.AptxError{
+		ErrorCode: aptxv1.AptxErrorCode_ALREADY_EXISTS,
 	}
 	res, err := st.WithDetails(se)
 	if err != nil {
@@ -59,8 +59,22 @@ func ErrAlreadyExists() error {
 // It explains that short URL is not found.
 func ErrNotFound() error {
 	st := status.New(codes.NotFound, "")
-	se := &aptxv1.URLShortenerError{
-		ErrorCode: aptxv1.URLShortenerErrorCode_NOT_FOUND,
+	se := &aptxv1.AptxError{
+		ErrorCode: aptxv1.AptxErrorCode_NOT_FOUND,
+	}
+	res, err := st.WithDetails(se)
+	if err != nil {
+		return st.Err()
+	}
+	return res.Err()
+}
+
+// ErrURLTooLong returns codes.InvalidArgument.
+// It explains that original URL's length exceeds 65535.
+func ErrURLTooLong() error {
+	st := status.New(codes.InvalidArgument, "")
+	se := &aptxv1.AptxError{
+		ErrorCode: aptxv1.AptxErrorCode_URL_TOO_LONG,
 	}
 	res, err := st.WithDetails(se)
 	if err != nil {

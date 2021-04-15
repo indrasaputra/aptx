@@ -12,6 +12,7 @@ const (
 	maxRetry          = 3
 	defaultExpiryTime = 7 * 24 * time.Hour
 	shortURLLength    = 7
+	maxURLLength      = 65535
 )
 
 // CreateShortURL is the interface that defines the short URL creation.
@@ -53,8 +54,13 @@ func NewShortURLCreator(generator URLGenerator, repo CreateShortURLRepository) *
 //
 // Currently, it does not check if the URL is valid. It only checks whether the URL is empty.
 func (sc *ShortURLCreator) Create(ctx context.Context, url string) (*entity.URL, error) {
-	if strings.TrimSpace(url) == "" {
+	trim := strings.TrimSpace(url)
+
+	if trim == "" {
 		return nil, entity.ErrEmptyURL()
+	}
+	if len(trim) > maxURLLength {
+		return nil, entity.ErrURLTooLong()
 	}
 
 	var data *entity.URL

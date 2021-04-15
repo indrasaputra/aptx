@@ -93,4 +93,8 @@ enum AptxErrorCode {
 
   // URL not found in system.
   NOT_FOUND = 4;
+
+  // Original URL's length is too long.
+  // It exceeds 65535 bytes.
+  URL_TOO_LONG = 5;
 }
