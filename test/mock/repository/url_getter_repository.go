@@ -10,7 +10,7 @@ import (
 
 	gomock "github.com/golang/mock/gomock"
 
-	entity "github.com/indrasaputra/url-shortener/entity"
+	entity "github.com/indrasaputra/aptx/entity"
 )
 
 // MockGetURLDatabase is a mock of GetURLDatabase interface

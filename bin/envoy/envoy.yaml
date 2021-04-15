@@ -31,7 +31,7 @@ static_resources:
               "@type": type.googleapis.com/envoy.extensions.filters.http.grpc_json_transcoder.v3.GrpcJsonTranscoder
               proto_descriptor: "/etc/envoy/image.bin"
               services:
-                - "proto.indrasaputra.shortener.v1.URLShortenerService"
+                - "proto.indrasaputra.aptx.v1.URLShortenerService"
               print_options:
                 add_whitespace: true
                 always_print_primitive_fields: true

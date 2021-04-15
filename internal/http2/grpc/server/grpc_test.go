@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/grpc"
 
-	"github.com/indrasaputra/url-shortener/internal/http2/grpc/server"
+	"github.com/indrasaputra/aptx/internal/http2/grpc/server"
 )
 
 var (

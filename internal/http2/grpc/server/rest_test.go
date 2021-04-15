@@ -7,7 +7,7 @@ import (
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/stretchr/testify/assert"
 
-	"github.com/indrasaputra/url-shortener/internal/http2/grpc/server"
+	"github.com/indrasaputra/aptx/internal/http2/grpc/server"
 )
 
 var (

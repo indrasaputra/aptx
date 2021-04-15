@@ -9,9 +9,9 @@ import (
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/grpc"
 
-	"github.com/indrasaputra/url-shortener/internal/builder"
-	"github.com/indrasaputra/url-shortener/internal/config"
-	"github.com/indrasaputra/url-shortener/internal/http2/grpc/handler"
+	"github.com/indrasaputra/aptx/internal/builder"
+	"github.com/indrasaputra/aptx/internal/config"
+	"github.com/indrasaputra/aptx/internal/http2/grpc/handler"
 )
 
 func TestBuildRedisClient(t *testing.T) {
@@ -48,7 +48,7 @@ func TestBuildPostgresConnPool(t *testing.T) {
 	cfg := config.Postgres{
 		Host:            "localhost",
 		Port:            "5432",
-		DBName:          "url_shortener",
+		DBName:          "url_aptx",
 		User:            "user",
 		Password:        "password",
 		MaxOpenConns:    10,
@@ -63,30 +63,30 @@ func TestBuildPostgresConnPool(t *testing.T) {
 	})
 }
 
-func TestBuildGRPCURLShortener(t *testing.T) {
-	t.Run("successfully build URLShortener handler", func(t *testing.T) {
+func TestBuildGRPCAptxService(t *testing.T) {
+	t.Run("successfully build AptxService handler", func(t *testing.T) {
 		rds := &redis.Client{}
 		pool := &pgxpool.Pool{}
-		hdr := builder.BuildGRPCURLShortener(pool, rds, "http://short-url.com")
+		hdr := builder.BuildGRPCAptxService(pool, rds, "http://short-url.com")
 		assert.NotNil(t, hdr)
 	})
 }
 
-func TestBuildGRPCHealthChecker(t *testing.T) {
-	t.Run("successfully build HealthChecker handler", func(t *testing.T) {
+func TestBuildGRPCHealthService(t *testing.T) {
+	t.Run("successfully build HealthService handler", func(t *testing.T) {
 		rds := &redis.Client{}
 		pool := &pgxpool.Pool{}
-		hdr := builder.BuildGRPCHealthChecker(pool, rds)
+		hdr := builder.BuildGRPCHealthService(pool, rds)
 		assert.NotNil(t, hdr)
 	})
 }
 
 func TestBuildGRPCServer(t *testing.T) {
 	t.Run("successfully build gRPC server", func(t *testing.T) {
-		shortener := &handler.URLShortener{}
-		health := &handler.HealthChecker{}
+		aptx := &handler.AptxService{}
+		health := &handler.HealthService{}
 
-		srv, err := builder.BuildGRPCServer("8080", shortener, health)
+		srv, err := builder.BuildGRPCServer("8080", aptx, health)
 
 		assert.Nil(t, err)
 		assert.NotNil(t, srv)

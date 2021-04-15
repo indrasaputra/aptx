@@ -3,7 +3,7 @@ package repository
 import (
 	"context"
 
-	"github.com/indrasaputra/url-shortener/entity"
+	"github.com/indrasaputra/aptx/entity"
 )
 
 // InsertURLDatabase defines the interface to insert a new URL to the database.

@@ -6,8 +6,8 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 
-	mock_usecase "github.com/indrasaputra/url-shortener/test/mock/usecase"
-	"github.com/indrasaputra/url-shortener/usecase"
+	mock_usecase "github.com/indrasaputra/aptx/test/mock/usecase"
+	"github.com/indrasaputra/aptx/usecase"
 )
 
 type HealthCheckerExecutor struct {

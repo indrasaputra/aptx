@@ -12,8 +12,8 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	"github.com/indrasaputra/url-shortener/entity"
-	"github.com/indrasaputra/url-shortener/internal/repository/cache"
+	"github.com/indrasaputra/aptx/entity"
+	"github.com/indrasaputra/aptx/internal/repository/cache"
 )
 
 var (

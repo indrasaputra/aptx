@@ -1,14 +1,14 @@
 syntax = "proto3";
 
-package proto.indrasaputra.shortener.v1;
+package proto.indrasaputra.aptx.v1;
 
-option go_package = "github.com/indrasaputra/url-shortener/proto/indrasaputra/shortener/v1;shortenerv1";
+option go_package = "github.com/indrasaputra/aptx/proto/indrasaputra/aptx/v1;aptxv1";
 
 import "google/api/annotations.proto";
 import "google/protobuf/timestamp.proto";
 
-service URLShortenerService {
-  rpc CreateShortURL(CreateShortURLRequest) returns (CreateShortURLResponse) {
+service AptxService {
+  rpc ShortenURL(ShortenURLRequest) returns (ShortenURLResponse) {
     option (google.api.http) = {
       post : "/v1/urls",
       body : "*"
@@ -34,11 +34,11 @@ service URLShortenerService {
   }
 }
 
-message CreateShortURLRequest {
+message ShortenURLRequest {
   string original_url = 1;
 }
 
-message CreateShortURLResponse {
+message ShortenURLResponse {
   URL url = 1;
 }
 
@@ -72,14 +72,14 @@ message URL {
   google.protobuf.Timestamp created_at = 5;
 }
 
-message URLShortenerError {
-  URLShortenerErrorCode error_code = 1;
+message AptxError {
+  AptxErrorCode error_code = 1;
 }
 
-enum URLShortenerErrorCode {
+enum AptxErrorCode {
   // Default enum code according to
   // https://medium.com/@akhaku/protobuf-definition-best-practices-87f281576f31.
-  UNKNOWN_URL_SHORTENER_ERROR_CODE = 0;
+  UNKNOWN = 0;
 
   // Unexpected behavior occured in system.
   INTERNAL = 1;
@@ -93,4 +93,8 @@ enum URLShortenerErrorCode {
 
   // URL not found in system.
   NOT_FOUND = 4;
+
+  // Original URL's length is too long.
+  // It exceeds 65535 bytes.
+  URL_TOO_LONG = 5;
 }

@@ -3,7 +3,7 @@ package repository
 import (
 	"context"
 
-	"github.com/indrasaputra/url-shortener/entity"
+	"github.com/indrasaputra/aptx/entity"
 )
 
 // GetURLDatabase defines the interface to get URL from the database.

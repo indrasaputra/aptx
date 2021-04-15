@@ -47,26 +47,26 @@ coverhtml:
 
 .PHONY: compile-server
 compile-server:
-	env GO111MODULE=on CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -ldflags '-extldflags "-static"' -o url-shortener-server cmd/server/main.go
+	env GO111MODULE=on CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -ldflags '-extldflags "-static"' -o aptx-server cmd/server/main.go
 
 .PHONY: docker-build-server
 docker-build-server:
-	docker build --no-cache -t url-shortener-server:latest .
+	docker build --no-cache -t aptx-server:latest .
 
 .PHONY: docker-build-envoy
 docker-build-envoy:
-	docker build --no-cache -t url-shortener-envoy:latest -f bin/envoy/Dockerfile .
+	docker build --no-cache -t aptx-envoy:latest -f bin/envoy/Dockerfile .
 
 .PHONY: docker-build-all
 docker-build-all: docker-build-server docker-build-envoy
 
 .PHONY: docker-run-server
 docker-run-server:
-	docker run -p 8080:8080 -p 8081:8081 --env-file .env url-shortener-server:latest
+	docker run -p 8080:8080 -p 8081:8081 --env-file .env aptx-server:latest
 
 .PHONY: docker-run-envoy
 docker-run-envoy:
-	docker run -p 9901:9901 -p 9090:9090 url-shortener-envoy:latest
+	docker run -p 9901:9901 -p 9090:9090 aptx-envoy:latest
 
 .PHONY: docker-run-all
 docker-run-all:

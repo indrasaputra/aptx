@@ -2,13 +2,14 @@ package usecase_test
 
 import (
 	"context"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/indrasaputra/url-shortener/entity"
-	mock_usecase "github.com/indrasaputra/url-shortener/test/mock/usecase"
-	"github.com/indrasaputra/url-shortener/usecase"
+	"github.com/indrasaputra/aptx/entity"
+	mock_usecase "github.com/indrasaputra/aptx/test/mock/usecase"
+	"github.com/indrasaputra/aptx/usecase"
 )
 
 var (
@@ -42,6 +43,23 @@ func TestShortURLCreator_Create(t *testing.T) {
 
 			assert.NotNil(t, err)
 			assert.Equal(t, entity.ErrEmptyURL(), err)
+			assert.Nil(t, res)
+		}
+	})
+
+	t.Run("url is too long", func(t *testing.T) {
+		exec := createShortURLCreatorExecutor()
+		urls := []string{
+			strings.Repeat("a", 65536),
+			strings.Repeat("b", 65537),
+			strings.Repeat("c", 65538),
+		}
+
+		for _, url := range urls {
+			res, err := exec.usecase.Create(testContext, url)
+
+			assert.NotNil(t, err)
+			assert.Equal(t, entity.ErrURLTooLong(), err)
 			assert.Nil(t, res)
 		}
 	})

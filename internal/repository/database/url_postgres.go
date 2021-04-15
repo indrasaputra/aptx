@@ -8,7 +8,7 @@ import (
 	"github.com/jackc/pgconn"
 	"github.com/jackc/pgx/v4"
 
-	"github.com/indrasaputra/url-shortener/entity"
+	"github.com/indrasaputra/aptx/entity"
 )
 
 const (

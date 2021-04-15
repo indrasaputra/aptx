@@ -5,12 +5,12 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/indrasaputra/url-shortener/internal/tool"
+	"github.com/indrasaputra/aptx/internal/tool"
 )
 
 func TestNewShortURLGenerator(t *testing.T) {
 	t.Run("successfully create an instance of ShortURLGenerator", func(t *testing.T) {
-		gen := tool.NewShortURLGenerator("http://shortener.url")
+		gen := tool.NewShortURLGenerator("http://aptx.url")
 		assert.NotNil(t, gen)
 	})
 }

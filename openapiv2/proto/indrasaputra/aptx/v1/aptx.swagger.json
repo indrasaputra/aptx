@@ -1,12 +1,12 @@
 {
   "swagger": "2.0",
   "info": {
-    "title": "proto/indrasaputra/shortener/v1/shortener.proto",
+    "title": "proto/indrasaputra/aptx/v1/aptx.proto",
     "version": "version not set"
   },
   "tags": [
     {
-      "name": "URLShortenerService"
+      "name": "AptxService"
     }
   ],
   "consumes": [
@@ -18,7 +18,7 @@
   "paths": {
     "/v1/stream/urls": {
       "get": {
-        "operationId": "URLShortenerService_StreamAllURL",
+        "operationId": "AptxService_StreamAllURL",
         "responses": {
           "200": {
             "description": "A successful response.(streaming responses)",
@@ -43,13 +43,13 @@
           }
         },
         "tags": [
-          "URLShortenerService"
+          "AptxService"
         ]
       }
     },
     "/v1/urls": {
       "get": {
-        "operationId": "URLShortenerService_GetAllURL",
+        "operationId": "AptxService_GetAllURL",
         "responses": {
           "200": {
             "description": "A successful response.",
@@ -65,16 +65,16 @@
           }
         },
         "tags": [
-          "URLShortenerService"
+          "AptxService"
         ]
       },
       "post": {
-        "operationId": "URLShortenerService_CreateShortURL",
+        "operationId": "AptxService_ShortenURL",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/v1CreateShortURLResponse"
+              "$ref": "#/definitions/v1ShortenURLResponse"
             }
           },
           "default": {
@@ -90,18 +90,18 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/v1CreateShortURLRequest"
+              "$ref": "#/definitions/v1ShortenURLRequest"
             }
           }
         ],
         "tags": [
-          "URLShortenerService"
+          "AptxService"
         ]
       }
     },
     "/v1/urls/{code}": {
       "get": {
-        "operationId": "URLShortenerService_GetURLDetail",
+        "operationId": "AptxService_GetURLDetail",
         "responses": {
           "200": {
             "description": "A successful response.",
@@ -125,7 +125,7 @@
           }
         ],
         "tags": [
-          "URLShortenerService"
+          "AptxService"
         ]
       }
     }
@@ -161,22 +161,6 @@
         }
       }
     },
-    "v1CreateShortURLRequest": {
-      "type": "object",
-      "properties": {
-        "originalUrl": {
-          "type": "string"
-        }
-      }
-    },
-    "v1CreateShortURLResponse": {
-      "type": "object",
-      "properties": {
-        "url": {
-          "$ref": "#/definitions/v1URL"
-        }
-      }
-    },
     "v1GetAllURLResponse": {
       "type": "object",
       "properties": {
@@ -189,6 +173,22 @@
       }
     },
     "v1GetURLDetailResponse": {
+      "type": "object",
+      "properties": {
+        "url": {
+          "$ref": "#/definitions/v1URL"
+        }
+      }
+    },
+    "v1ShortenURLRequest": {
+      "type": "object",
+      "properties": {
+        "originalUrl": {
+          "type": "string"
+        }
+      }
+    },
+    "v1ShortenURLResponse": {
       "type": "object",
       "properties": {
         "url": {

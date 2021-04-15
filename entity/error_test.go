@@ -7,7 +7,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	"github.com/indrasaputra/url-shortener/entity"
+	"github.com/indrasaputra/aptx/entity"
 )
 
 func TestErrInternal(t *testing.T) {
@@ -43,5 +43,14 @@ func TestErrNotFound(t *testing.T) {
 
 		assert.Contains(t, err.Error(), "rpc error: code = NotFound")
 		assert.Equal(t, codes.NotFound, status.Code(err))
+	})
+}
+
+func TestErrURLTooLong(t *testing.T) {
+	t.Run("success get codes.InvalidArgument error", func(t *testing.T) {
+		err := entity.ErrURLTooLong()
+
+		assert.Contains(t, err.Error(), "rpc error: code = InvalidArgument")
+		assert.Equal(t, codes.InvalidArgument, status.Code(err))
 	})
 }
