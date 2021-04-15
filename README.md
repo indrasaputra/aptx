@@ -1,11 +1,11 @@
-# URL Shortener
+# APTX
 
-[![Go Report Card](https://goreportcard.com/badge/github.com/indrasaputra/url-shortener)](https://goreportcard.com/report/github.com/indrasaputra/url-shortener)
-[![Workflow](https://github.com/indrasaputra/url-shortener/workflows/Test/badge.svg)](https://github.com/indrasaputra/url-shortener/actions)
-[![codecov](https://codecov.io/gh/indrasaputra/url-shortener/branch/main/graph/badge.svg?token=VI4V05KUEO)](https://codecov.io/gh/indrasaputra/url-shortener)
-[![Maintainability](https://api.codeclimate.com/v1/badges/e28a29089f4c66303cb0/maintainability)](https://codeclimate.com/github/indrasaputra/url-shortener/maintainability)
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=indrasaputra_url-shortener&metric=alert_status)](https://sonarcloud.io/dashboard?id=indrasaputra_url-shortener)
-[![Go Reference](https://pkg.go.dev/badge/github.com/indrasaputra/url-shortener.svg)](https://pkg.go.dev/github.com/indrasaputra/url-shortener)
+[![Go Report Card](https://goreportcard.com/badge/github.com/indrasaputra/aptx)](https://goreportcard.com/report/github.com/indrasaputra/aptx)
+[![Workflow](https://github.com/indrasaputra/aptx/workflows/Test/badge.svg)](https://github.com/indrasaputra/aptx/actions)
+[![codecov](https://codecov.io/gh/indrasaputra/aptx/branch/main/graph/badge.svg?token=VI4V05KUEO)](https://codecov.io/gh/indrasaputra/aptx)
+[![Maintainability](https://api.codeclimate.com/v1/badges/e28a29089f4c66303cb0/maintainability)](https://codeclimate.com/github/indrasaputra/aptx/maintainability)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=indrasaputra_aptx&metric=alert_status)](https://sonarcloud.io/dashboard?id=indrasaputra_aptx)
+[![Go Reference](https://pkg.go.dev/badge/github.com/indrasaputra/aptx.svg)](https://pkg.go.dev/github.com/indrasaputra/aptx)
 
 ## Owner
 

@@ -3,7 +3,7 @@ package usecase
 import (
 	"context"
 
-	"github.com/indrasaputra/url-shortener/entity"
+	"github.com/indrasaputra/aptx/entity"
 )
 
 // CheckHealth is the interface that defines the health check.

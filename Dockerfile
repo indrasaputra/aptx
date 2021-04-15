@@ -8,7 +8,7 @@ RUN GRPC_HEALTH_PROBE_VERSION=v0.3.6 && \
 
 FROM alpine:3.13
 WORKDIR /app
-COPY --from=builder /app/url-shortener-server .
+COPY --from=builder /app/aptx-server .
 COPY --from=builder /bin/grpc_health_probe ./grpc_health_probe
 EXPOSE 8080
-CMD ["/app/url-shortener-server"]
+CMD ["/app/aptx-server"]

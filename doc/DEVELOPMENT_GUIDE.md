@@ -3,7 +3,7 @@
 - Fork or clone the project
 
     ```
-    $ git@github.com:indrasaputra/url-shortener.git
+    $ git@github.com:indrasaputra/aptx.git
     ```
 
 - Create a meaningful branch

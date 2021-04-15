@@ -7,9 +7,9 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 
-	"github.com/indrasaputra/url-shortener/entity"
-	"github.com/indrasaputra/url-shortener/internal/repository"
-	mock_repository "github.com/indrasaputra/url-shortener/test/mock/repository"
+	"github.com/indrasaputra/aptx/entity"
+	"github.com/indrasaputra/aptx/internal/repository"
+	mock_repository "github.com/indrasaputra/aptx/test/mock/repository"
 )
 
 type URLGetterExecutor struct {

@@ -10,11 +10,11 @@ import (
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
-	"github.com/indrasaputra/url-shortener/entity"
-	"github.com/indrasaputra/url-shortener/internal/http2/grpc/handler"
-	shortenerv1 "github.com/indrasaputra/url-shortener/proto/indrasaputra/shortener/v1"
-	mock_grpc "github.com/indrasaputra/url-shortener/test/mock/http2/grpc"
-	mock_usecase "github.com/indrasaputra/url-shortener/test/mock/usecase"
+	"github.com/indrasaputra/aptx/entity"
+	"github.com/indrasaputra/aptx/internal/http2/grpc/handler"
+	aptxv1 "github.com/indrasaputra/aptx/proto/indrasaputra/aptx/v1"
+	mock_grpc "github.com/indrasaputra/aptx/test/mock/http2/grpc"
+	mock_usecase "github.com/indrasaputra/aptx/test/mock/usecase"
 )
 
 var (
@@ -25,21 +25,21 @@ var (
 	testCode               = "ABCdef12"
 	testShortURL           = "http://short.url/ABCdef12"
 	testOriginalURL        = "http://very-long-original.url"
-	testShortenerV1URL     = &shortenerv1.URL{
+	testShortenerV1URL     = &aptxv1.URL{
 		Code:        testCode,
 		ShortUrl:    testShortURL,
 		OriginalUrl: testOriginalURL,
 		ExpiredAt:   timestamppb.New(testExpiredAt),
 		CreatedAt:   timestamppb.New(testCreatedAt),
 	}
-	testCreateShortURLRequest  = &shortenerv1.CreateShortURLRequest{OriginalUrl: testOriginalURL}
-	testCreateShortURLResponse = &shortenerv1.CreateShortURLResponse{Url: testShortenerV1URL}
-	testGetAllURLRequest       = &shortenerv1.GetAllURLRequest{}
-	testGetAllURLResponse      = &shortenerv1.GetAllURLResponse{Urls: []*shortenerv1.URL{testShortenerV1URL}}
-	testStreamAllURLRequest    = &shortenerv1.StreamAllURLRequest{}
-	testStreamAllURLResponse   = &shortenerv1.StreamAllURLResponse{Url: testShortenerV1URL}
-	testGetURLDetailRequest    = &shortenerv1.GetURLDetailRequest{Code: testCode}
-	testGetURLDetailResponse   = &shortenerv1.GetURLDetailResponse{Url: testShortenerV1URL}
+	testCreateShortURLRequest  = &aptxv1.CreateShortURLRequest{OriginalUrl: testOriginalURL}
+	testCreateShortURLResponse = &aptxv1.CreateShortURLResponse{Url: testShortenerV1URL}
+	testGetAllURLRequest       = &aptxv1.GetAllURLRequest{}
+	testGetAllURLResponse      = &aptxv1.GetAllURLResponse{Urls: []*aptxv1.URL{testShortenerV1URL}}
+	testStreamAllURLRequest    = &aptxv1.StreamAllURLRequest{}
+	testStreamAllURLResponse   = &aptxv1.StreamAllURLResponse{Url: testShortenerV1URL}
+	testGetURLDetailRequest    = &aptxv1.GetURLDetailRequest{Code: testCode}
+	testGetURLDetailResponse   = &aptxv1.GetURLDetailResponse{Url: testShortenerV1URL}
 	testURLs                   = []*entity.URL{
 		{
 			Code:        testCode,

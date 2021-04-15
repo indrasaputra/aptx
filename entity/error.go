@@ -5,15 +5,15 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	shortenerv1 "github.com/indrasaputra/url-shortener/proto/indrasaputra/shortener/v1"
+	aptxv1 "github.com/indrasaputra/aptx/proto/indrasaputra/aptx/v1"
 )
 
 // ErrInternal returns codes.Internal.
 // It explains that unexpected behavior occurred in system.
 func ErrInternal(message string) error {
 	st := status.New(codes.Internal, message)
-	se := &shortenerv1.URLShortenerError{
-		ErrorCode: shortenerv1.URLShortenerErrorCode_INTERNAL,
+	se := &aptxv1.URLShortenerError{
+		ErrorCode: aptxv1.URLShortenerErrorCode_INTERNAL,
 	}
 	res, err := st.WithDetails(se)
 	if err != nil {
@@ -31,8 +31,8 @@ func ErrEmptyURL() error {
 		Description: "empty or nil",
 	})
 
-	se := &shortenerv1.URLShortenerError{
-		ErrorCode: shortenerv1.URLShortenerErrorCode_EMPTY_URL,
+	se := &aptxv1.URLShortenerError{
+		ErrorCode: aptxv1.URLShortenerErrorCode_EMPTY_URL,
 	}
 	res, err := st.WithDetails(br, se)
 	if err != nil {
@@ -45,8 +45,8 @@ func ErrEmptyURL() error {
 // It explains that the code / short URL already exists.
 func ErrAlreadyExists() error {
 	st := status.New(codes.AlreadyExists, "")
-	se := &shortenerv1.URLShortenerError{
-		ErrorCode: shortenerv1.URLShortenerErrorCode_ALREADY_EXISTS,
+	se := &aptxv1.URLShortenerError{
+		ErrorCode: aptxv1.URLShortenerErrorCode_ALREADY_EXISTS,
 	}
 	res, err := st.WithDetails(se)
 	if err != nil {
@@ -59,8 +59,8 @@ func ErrAlreadyExists() error {
 // It explains that short URL is not found.
 func ErrNotFound() error {
 	st := status.New(codes.NotFound, "")
-	se := &shortenerv1.URLShortenerError{
-		ErrorCode: shortenerv1.URLShortenerErrorCode_NOT_FOUND,
+	se := &aptxv1.URLShortenerError{
+		ErrorCode: aptxv1.URLShortenerErrorCode_NOT_FOUND,
 	}
 	res, err := st.WithDetails(se)
 	if err != nil {

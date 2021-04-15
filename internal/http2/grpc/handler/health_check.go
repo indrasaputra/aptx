@@ -7,7 +7,7 @@ import (
 	grpchealthv1 "google.golang.org/grpc/health/grpc_health_v1"
 	"google.golang.org/grpc/status"
 
-	"github.com/indrasaputra/url-shortener/usecase"
+	"github.com/indrasaputra/aptx/usecase"
 )
 
 // HealthChecker handles HTTP/2 gRPC request for health checking.

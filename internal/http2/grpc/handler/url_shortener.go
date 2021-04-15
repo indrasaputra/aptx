@@ -5,14 +5,14 @@ import (
 
 	"google.golang.org/protobuf/types/known/timestamppb"
 
-	"github.com/indrasaputra/url-shortener/entity"
-	shortenerv1 "github.com/indrasaputra/url-shortener/proto/indrasaputra/shortener/v1"
-	"github.com/indrasaputra/url-shortener/usecase"
+	"github.com/indrasaputra/aptx/entity"
+	aptxv1 "github.com/indrasaputra/aptx/proto/indrasaputra/aptx/v1"
+	"github.com/indrasaputra/aptx/usecase"
 )
 
-// URLShortener handles HTTP/2 gRPC request for URL shortener.
+// URLShortener handles HTTP/2 gRPC request for URL aptx.
 type URLShortener struct {
-	shortenerv1.UnimplementedURLShortenerServiceServer
+	aptxv1.UnimplementedURLShortenerServiceServer
 	creator usecase.CreateShortURL
 	getter  usecase.GetURL
 }
@@ -26,7 +26,7 @@ func NewURLShortener(creator usecase.CreateShortURL, getter usecase.GetURL) *URL
 }
 
 // CreateShortURL handles HTTP/2 gRPC request similar to POST in HTTP/1.1.
-func (us *URLShortener) CreateShortURL(ctx context.Context, request *shortenerv1.CreateShortURLRequest) (*shortenerv1.CreateShortURLResponse, error) {
+func (us *URLShortener) CreateShortURL(ctx context.Context, request *aptxv1.CreateShortURLRequest) (*aptxv1.CreateShortURLResponse, error) {
 	if request == nil {
 		return nil, entity.ErrEmptyURL()
 	}
@@ -41,7 +41,7 @@ func (us *URLShortener) CreateShortURL(ctx context.Context, request *shortenerv1
 
 // GetAllURL handles HTTP/2 gRPC request similar to GET in HTTP/1.1.
 // Its specific job is to get all available URLs in the system.
-func (us *URLShortener) GetAllURL(ctx context.Context, request *shortenerv1.GetAllURLRequest) (*shortenerv1.GetAllURLResponse, error) {
+func (us *URLShortener) GetAllURL(ctx context.Context, request *aptxv1.GetAllURLRequest) (*aptxv1.GetAllURLResponse, error) {
 	if request == nil {
 		return nil, entity.ErrEmptyURL()
 	}
@@ -56,7 +56,7 @@ func (us *URLShortener) GetAllURL(ctx context.Context, request *shortenerv1.GetA
 
 // StreamAllURL handles HTTP/2 gRPC request similar to GET in HTTP/1.1.
 // Its specific job is to get all available URLs in the system using stream.
-func (us *URLShortener) StreamAllURL(request *shortenerv1.StreamAllURLRequest, stream shortenerv1.URLShortenerService_StreamAllURLServer) error {
+func (us *URLShortener) StreamAllURL(request *aptxv1.StreamAllURLRequest, stream aptxv1.URLShortenerService_StreamAllURLServer) error {
 	urls, err := us.getter.GetAll(stream.Context())
 	if err != nil {
 		return err
@@ -73,7 +73,7 @@ func (us *URLShortener) StreamAllURL(request *shortenerv1.StreamAllURLRequest, s
 
 // GetURLDetail handles HTTP/2 gRPC request similar to GET in HTTP/1.1.
 // Its specific job is to get a detail of a single short URL.
-func (us *URLShortener) GetURLDetail(ctx context.Context, request *shortenerv1.GetURLDetailRequest) (*shortenerv1.GetURLDetailResponse, error) {
+func (us *URLShortener) GetURLDetail(ctx context.Context, request *aptxv1.GetURLDetailRequest) (*aptxv1.GetURLDetailResponse, error) {
 	if request == nil {
 		return nil, entity.ErrEmptyURL()
 	}
@@ -85,34 +85,34 @@ func (us *URLShortener) GetURLDetail(ctx context.Context, request *shortenerv1.G
 	return createGetURLDetailResponseFromEntity(url), nil
 }
 
-func createCreateShortURLResponseFromEntity(url *entity.URL) *shortenerv1.CreateShortURLResponse {
-	return &shortenerv1.CreateShortURLResponse{
+func createCreateShortURLResponseFromEntity(url *entity.URL) *aptxv1.CreateShortURLResponse {
+	return &aptxv1.CreateShortURLResponse{
 		Url: createShortenerV1URL(url),
 	}
 }
 
-func createGetAllURLResponseFromEntity(urls []*entity.URL) *shortenerv1.GetAllURLResponse {
-	res := &shortenerv1.GetAllURLResponse{}
+func createGetAllURLResponseFromEntity(urls []*entity.URL) *aptxv1.GetAllURLResponse {
+	res := &aptxv1.GetAllURLResponse{}
 	for _, url := range urls {
 		res.Urls = append(res.Urls, createShortenerV1URL(url))
 	}
 	return res
 }
 
-func createStreamAllURLResponseFromEntity(url *entity.URL) *shortenerv1.StreamAllURLResponse {
-	return &shortenerv1.StreamAllURLResponse{
+func createStreamAllURLResponseFromEntity(url *entity.URL) *aptxv1.StreamAllURLResponse {
+	return &aptxv1.StreamAllURLResponse{
 		Url: createShortenerV1URL(url),
 	}
 }
 
-func createGetURLDetailResponseFromEntity(url *entity.URL) *shortenerv1.GetURLDetailResponse {
-	return &shortenerv1.GetURLDetailResponse{
+func createGetURLDetailResponseFromEntity(url *entity.URL) *aptxv1.GetURLDetailResponse {
+	return &aptxv1.GetURLDetailResponse{
 		Url: createShortenerV1URL(url),
 	}
 }
 
-func createShortenerV1URL(url *entity.URL) *shortenerv1.URL {
-	return &shortenerv1.URL{
+func createShortenerV1URL(url *entity.URL) *aptxv1.URL {
+	return &aptxv1.URL{
 		Code:        url.Code,
 		ShortUrl:    url.ShortURL,
 		OriginalUrl: url.OriginalURL,

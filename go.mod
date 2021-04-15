@@ -1,4 +1,4 @@
-module github.com/indrasaputra/url-shortener
+module github.com/indrasaputra/aptx
 
 go 1.16
 
@@ -16,10 +16,10 @@ require (
 	github.com/joho/godotenv v1.3.0
 	github.com/pashagolub/pgxmock v0.0.0-20210329125448-d2e8b19a1746
 	github.com/pkg/errors v0.9.1
-	github.com/prometheus/client_golang v1.3.0
+	github.com/prometheus/client_golang v1.10.0
 	github.com/stretchr/testify v1.7.0
 	go.uber.org/zap v1.16.0
-	google.golang.org/genproto v0.0.0-20210323160006-e668133fea6a
-	google.golang.org/grpc v1.36.0
+	google.golang.org/genproto v0.0.0-20210414175830-92282443c685
+	google.golang.org/grpc v1.37.0
 	google.golang.org/protobuf v1.26.0
 )

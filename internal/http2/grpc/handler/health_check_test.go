@@ -3,18 +3,18 @@ package handler_test
 import (
 	"testing"
 
-	"github.com/indrasaputra/url-shortener/entity"
+	"github.com/indrasaputra/aptx/entity"
 
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 	grpchealthv1 "google.golang.org/grpc/health/grpc_health_v1"
 
-	"github.com/indrasaputra/url-shortener/internal/http2/grpc/handler"
-	mock_usecase "github.com/indrasaputra/url-shortener/test/mock/usecase"
+	"github.com/indrasaputra/aptx/internal/http2/grpc/handler"
+	mock_usecase "github.com/indrasaputra/aptx/test/mock/usecase"
 )
 
 var (
-	testHealthCheckRequest = &grpchealthv1.HealthCheckRequest{Service: "url-shortener"}
+	testHealthCheckRequest = &grpchealthv1.HealthCheckRequest{Service: "aptx"}
 )
 
 type HealthCheckerExecutor struct {

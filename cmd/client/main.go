@@ -8,8 +8,8 @@ import (
 
 	"google.golang.org/grpc"
 
-	"github.com/indrasaputra/url-shortener/internal/config"
-	shortenerv1 "github.com/indrasaputra/url-shortener/proto/indrasaputra/shortener/v1"
+	"github.com/indrasaputra/aptx/internal/config"
+	aptxv1 "github.com/indrasaputra/aptx/proto/indrasaputra/aptx/v1"
 )
 
 func main() {
@@ -20,19 +20,19 @@ func main() {
 	checkError(err)
 	defer conn.Close()
 
-	shortener := shortenerv1.NewURLShortenerServiceClient(conn)
+	aptx := aptxv1.NewURLShortenerServiceClient(conn)
 	fmt.Println("start send...")
-	send(shortener)
+	send(aptx)
 	fmt.Printf("end send\n\n")
 	fmt.Println("start get all...")
-	streamAll(shortener)
+	streamAll(aptx)
 	fmt.Printf("end get all\n\n")
 	fmt.Println("start get detail...")
-	getDetail(shortener)
+	getDetail(aptx)
 	fmt.Printf("end get detail\n\n")
 }
 
-func send(shortener shortenerv1.URLShortenerServiceClient) {
+func send(aptx aptxv1.URLShortenerServiceClient) {
 	urls := []string{
 		"http://this-is-a-very-long-url-1.url",
 		"http://this-is-a-very-long-url-2.url",
@@ -40,8 +40,8 @@ func send(shortener shortenerv1.URLShortenerServiceClient) {
 	}
 
 	for _, url := range urls {
-		req := &shortenerv1.CreateShortURLRequest{OriginalUrl: url}
-		resp, err := shortener.CreateShortURL(context.Background(), req)
+		req := &aptxv1.CreateShortURLRequest{OriginalUrl: url}
+		resp, err := aptx.CreateShortURL(context.Background(), req)
 		if err != nil {
 			log.Printf("create short url: %v", err)
 			return
@@ -50,8 +50,8 @@ func send(shortener shortenerv1.URLShortenerServiceClient) {
 	}
 }
 
-func streamAll(shortener shortenerv1.URLShortenerServiceClient) {
-	stream, err := shortener.StreamAllURL(context.Background(), &shortenerv1.StreamAllURLRequest{})
+func streamAll(aptx aptxv1.URLShortenerServiceClient) {
+	stream, err := aptx.StreamAllURL(context.Background(), &aptxv1.StreamAllURLRequest{})
 	if err != nil {
 		log.Printf("stream all: %v\n", err)
 		return
@@ -70,15 +70,15 @@ func streamAll(shortener shortenerv1.URLShortenerServiceClient) {
 	}
 }
 
-func getDetail(shortener shortenerv1.URLShortenerServiceClient) {
-	resp, err := shortener.GetAllURL(context.Background(), &shortenerv1.GetAllURLRequest{})
+func getDetail(aptx aptxv1.URLShortenerServiceClient) {
+	resp, err := aptx.GetAllURL(context.Background(), &aptxv1.GetAllURLRequest{})
 	if err != nil {
 		log.Printf("get first detail: %v\n", err)
 		return
 	}
 
 	for _, res := range resp.GetUrls() {
-		url, derr := shortener.GetURLDetail(context.Background(), &shortenerv1.GetURLDetailRequest{Code: res.GetCode()})
+		url, derr := aptx.GetURLDetail(context.Background(), &aptxv1.GetURLDetailRequest{Code: res.GetCode()})
 		if derr != nil {
 			log.Printf("get detail: %v\n", derr)
 			return

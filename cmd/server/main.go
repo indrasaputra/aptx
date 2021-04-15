@@ -3,8 +3,8 @@ package main
 import (
 	"google.golang.org/grpc"
 
-	"github.com/indrasaputra/url-shortener/internal/builder"
-	"github.com/indrasaputra/url-shortener/internal/config"
+	"github.com/indrasaputra/aptx/internal/builder"
+	"github.com/indrasaputra/aptx/internal/config"
 )
 
 func main() {
@@ -16,10 +16,10 @@ func main() {
 	redis, rerr := builder.BuildRedisClient(cfg.Redis)
 	checkError(rerr)
 
-	shortener := builder.BuildGRPCURLShortener(postgres, redis, cfg.Domain)
+	aptx := builder.BuildGRPCURLShortener(postgres, redis, cfg.Domain)
 	health := builder.BuildGRPCHealthChecker(postgres, redis)
 
-	grpcServer, gerr := builder.BuildGRPCServer(cfg.PortGRPC, shortener, health)
+	grpcServer, gerr := builder.BuildGRPCServer(cfg.PortGRPC, aptx, health)
 	checkError(gerr)
 	_ = grpcServer.Run()
 

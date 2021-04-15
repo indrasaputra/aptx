@@ -5,7 +5,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/indrasaputra/url-shortener/internal/config"
+	"github.com/indrasaputra/aptx/internal/config"
 )
 
 func TestNewConfig(t *testing.T) {

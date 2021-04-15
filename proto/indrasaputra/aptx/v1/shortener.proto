@@ -1,8 +1,8 @@
 syntax = "proto3";
 
-package proto.indrasaputra.shortener.v1;
+package proto.indrasaputra.aptx.v1;
 
-option go_package = "github.com/indrasaputra/url-shortener/proto/indrasaputra/shortener/v1;shortenerv1";
+option go_package = "github.com/indrasaputra/aptx/proto/indrasaputra/aptx/v1;aptxv1";
 
 import "google/api/annotations.proto";
 import "google/protobuf/timestamp.proto";

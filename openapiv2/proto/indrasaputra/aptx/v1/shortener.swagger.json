@@ -1,7 +1,7 @@
 {
   "swagger": "2.0",
   "info": {
-    "title": "proto/indrasaputra/shortener/v1/shortener.proto",
+    "title": "proto/indrasaputra/aptx/v1/shortener.proto",
     "version": "version not set"
   },
   "tags": [

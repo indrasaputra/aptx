@@ -14,15 +14,15 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/health/grpc_health_v1"
 
-	"github.com/indrasaputra/url-shortener/internal/config"
-	"github.com/indrasaputra/url-shortener/internal/http2/grpc/handler"
-	"github.com/indrasaputra/url-shortener/internal/http2/grpc/server"
-	"github.com/indrasaputra/url-shortener/internal/repository"
-	"github.com/indrasaputra/url-shortener/internal/repository/cache"
-	"github.com/indrasaputra/url-shortener/internal/repository/database"
-	"github.com/indrasaputra/url-shortener/internal/tool"
-	shortenerv1 "github.com/indrasaputra/url-shortener/proto/indrasaputra/shortener/v1"
-	"github.com/indrasaputra/url-shortener/usecase"
+	"github.com/indrasaputra/aptx/internal/config"
+	"github.com/indrasaputra/aptx/internal/http2/grpc/handler"
+	"github.com/indrasaputra/aptx/internal/http2/grpc/server"
+	"github.com/indrasaputra/aptx/internal/repository"
+	"github.com/indrasaputra/aptx/internal/repository/cache"
+	"github.com/indrasaputra/aptx/internal/repository/database"
+	"github.com/indrasaputra/aptx/internal/tool"
+	aptxv1 "github.com/indrasaputra/aptx/proto/indrasaputra/aptx/v1"
+	"github.com/indrasaputra/aptx/usecase"
 )
 
 // BuildRedisClient builds a redis client.
@@ -84,9 +84,9 @@ func BuildGRPCHealthChecker(pool *pgxpool.Pool, rds redis.Cmdable) *handler.Heal
 }
 
 // BuildGRPCServer builds gRPC server along with all services that needs it.
-// For this project, the services are URL Shortener and Health Checker.
+// For this project, the services are APTX and Health Checker.
 // It also sets the Prometheus and Zap Logger.
-func BuildGRPCServer(port string, shortener *handler.URLShortener, health *handler.HealthChecker, options ...grpc.ServerOption) (*server.GRPC, error) {
+func BuildGRPCServer(port string, aptx *handler.URLShortener, health *handler.HealthChecker, options ...grpc.ServerOption) (*server.GRPC, error) {
 	logger, err := zap.NewProduction()
 	if err != nil {
 		return nil, err
@@ -101,7 +101,7 @@ func BuildGRPCServer(port string, shortener *handler.URLShortener, health *handl
 	grpcServer := server.NewGRPC(port, options...)
 	grpcServer.RegisterServices(
 		registerGRPCPrometheus(),
-		registerGRPCURLShortenerService(shortener),
+		registerGRPCURLShortenerService(aptx),
 		registerGRPCHealthService(health),
 	)
 
@@ -109,7 +109,7 @@ func BuildGRPCServer(port string, shortener *handler.URLShortener, health *handl
 }
 
 // BuildRestServer builds REST server along with all services that needs it.
-// For this project, there is only one service: URL Shortener.
+// For this project, there is only one service: APTX.
 // Health Checker service is not included because it will only run on gRPC port.
 // It also sets the Prometheus endpoint in /metrics.
 func BuildRestServer(restPort, grpcPort string, options ...grpc.DialOption) (*server.Rest, error) {
@@ -133,9 +133,9 @@ func registerGRPCPrometheus() server.RegisterServiceFunc {
 	}
 }
 
-func registerGRPCURLShortenerService(shortener *handler.URLShortener) server.RegisterServiceFunc {
+func registerGRPCURLShortenerService(aptx *handler.URLShortener) server.RegisterServiceFunc {
 	return func(server *grpc.Server) {
-		shortenerv1.RegisterURLShortenerServiceServer(server, shortener)
+		aptxv1.RegisterURLShortenerServiceServer(server, aptx)
 	}
 }
 
@@ -147,6 +147,6 @@ func registerGRPCHealthService(health *handler.HealthChecker) server.RegisterSer
 
 func registerRestURLShortenerEndpoint(grpcPort string, options ...grpc.DialOption) server.RegisterEndpointFunc {
 	return func(server *runtime.ServeMux) error {
-		return shortenerv1.RegisterURLShortenerServiceHandlerFromEndpoint(context.Background(), server, fmt.Sprintf(":%s", grpcPort), options)
+		return aptxv1.RegisterURLShortenerServiceHandlerFromEndpoint(context.Background(), server, fmt.Sprintf(":%s", grpcPort), options)
 	}
 }
