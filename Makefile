@@ -95,3 +95,9 @@ rollback:
 .PHONY: force-migrate
 force-migrate:
 	migrate -path db/migrations -database $(url) force $(version)
+
+.PHONY: genwithdocker
+genwithdocker:
+	docker run -it --rm \
+	--mount "type=bind,source=${PWD},destination=/work,consistency=cached" \
+	-w /work indrasaputra/protogen:0.0.1 make gengrpc format -f Makefile

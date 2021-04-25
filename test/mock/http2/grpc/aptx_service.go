@@ -9,8 +9,9 @@ import (
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
-	v1 "github.com/indrasaputra/aptx/proto/indrasaputra/aptx/v1"
 	metadata "google.golang.org/grpc/metadata"
+
+	v1 "github.com/indrasaputra/aptx/proto/indrasaputra/aptx/v1"
 )
 
 // MockAptxService_StreamAllURLServer is a mock of AptxService_StreamAllURLServer interface
